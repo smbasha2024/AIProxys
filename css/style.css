@@ -612,3 +612,127 @@ input, textarea {
 @keyframes spin {
     to { transform: translateY(-50%) rotate(360deg); }
 }
+
+.left-border-box {
+  border: 2px solid #ccc;      /* Gray border for rest */
+  border-left: 6px solid red;  /* Only left side in red */
+  padding: 12px;
+}
+
+/****************************************************************************************/
+/*            Quill, Rich Text Editor, styles and customizations                       */
+/***************************************************************************************/
+
+/* Map Quill font classes to actual fonts */
+.ql-font-roboto { font-family: 'Roboto', sans-serif; }
+.ql-font-lato { font-family: 'Lato', sans-serif; }
+.ql-font-open-sans { font-family: 'Open Sans', sans-serif; }
+.ql-font-montserrat { font-family: 'Montserrat', sans-serif; }
+.ql-font-raleway { font-family: 'Raleway', sans-serif; }
+.ql-font-serif { font-family: serif; }
+.ql-font-sans-serif { font-family: sans-serif; }
+.ql-font-monospace { font-family: monospace; }
+.ql-font-arial { font-family: Arial, Helvetica, sans-serif; }
+.ql-font-verdana { font-family: Verdana, Geneva, sans-serif; }
+.ql-font-times-new-roman { font-family: "Times New Roman", Times, serif; }
+
+/* Show ALL font names in the Quill font dropdown */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+    content: "Arial";
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"]::before {
+    content: "Verdana";
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times-new-roman"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times-new-roman"]::before {
+    content: "Times New Roman";
+    font-family: "Times New Roman", Times, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="roboto"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="roboto"]::before {
+    content: "Roboto";
+    font-family: "Roboto", sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="lato"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="lato"]::before {
+    content: "Lato";
+    font-family: "Lato", sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="open-sans"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="open-sans"]::before {
+    content: "Open Sans";
+    font-family: "Open Sans", sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="montserrat"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="montserrat"]::before {
+    content: "Montserrat";
+    font-family: "Montserrat", sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="raleway"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="raleway"]::before {
+    content: "Raleway";
+    font-family: "Raleway", sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
+    content: "Serif";
+    font-family: serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="sans-serif"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="sans-serif"]::before {
+    content: "Sans Serif";
+    font-family: sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
+    content: "Monospace";
+    font-family: monospace;
+}
+
+/* Custom size classes */
+.ql-size-extra-small {
+    font-size: 10px;
+}
+
+.ql-size-small {
+    font-size: 14px;
+}
+
+.ql-size-medium {
+    font-size: 18px;
+}
+
+.ql-size-large {
+    font-size: 24px;
+}
+
+.ql-size-extra-large {
+    font-size: 32px;
+}
+
+/* Label overrides for Snow theme (size dropdown) */
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="extra-small"]::before { content: "Extra Small"; font-size: 10px; }
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before { content: "Small"; font-size: 12px;}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="medium"]::before { content: "Medium"; font-size: 18px;}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before { content: "Large"; font-size: 24px;}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="extra-large"]::before { content: "Extra Large"; font-size: 32px;}
+.ql-snow .ql-picker.ql-size .ql-picker-item:not([data-value])::before { content: "Normal"; font-size: 14px;}
+
+
+#editor {
+    height: 300px;
+}

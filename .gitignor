@@ -1,0 +1,12 @@
+# Byte-compiled / cache
+
+# Virtual environment
+
+# Environment variables
+
+# OS files
+.DS_Store
+
+# IDE configs
+.vscode/
+.idea/
