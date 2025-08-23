@@ -619,6 +619,71 @@ input, textarea {
   padding: 12px;
 }
 
+/***************************************************************************************/
+/*                            Search Results Related                                   */
+/***************************************************************************************/
+.results-list {
+    display: grid;
+    gap: 20px;
+}
+
+.result-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #5f6063;
+    transition: transform 0.3s;
+}
+
+.result-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.result-title {
+    font-size: 1.4rem;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.result-url {
+    color: darkblue;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.result-snippet {
+    color: black;
+    line-height: 1.6;
+}
+
+.highlight {
+    background: #fff8e1;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: white;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.results-section {
+    border: 1px solid white;
+    padding: 10px;
+    border-radius: 4px; /* optional */
+}
+
 /****************************************************************************************/
 /*            Quill, Rich Text Editor, styles and customizations                       */
 /***************************************************************************************/

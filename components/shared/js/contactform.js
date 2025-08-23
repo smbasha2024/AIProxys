@@ -25,7 +25,7 @@ btnContact.disabled = !contactMsgForm.checkValidity();
 
 // Optional: Add visual feedback
 mandatoryFields.forEach(field => {
-  console.log(field);
+  //console.log(field);
   if (field.tagName !== 'DIV'){
     field.addEventListener('input', () => {
       field.classList.toggle('valid', field.checkValidity());
@@ -111,7 +111,7 @@ document.getElementById('email').addEventListener('input', function() {
 
 async function resultsToForm(strResult) {
   const result = document.getElementById("result");
-  result.innerHTML = "Your Message Sent successfully! You may receive an acknowledgemnt." + "<br/><b>PS:</b>" + strResult;
+  result.innerHTML = "Your Message Sent successfully! We'll be in touch with you shortly." + "<br/><b>PS:</b>" + strResult;
 }
 
 async function sendMessage() {
@@ -124,12 +124,14 @@ async function sendMessage() {
 
     //console.log("calling sendEmail...")
     const apiResult = await sendEmail();
+    await resultsToForm("");
+
     //console.log('API call Result: ', apiResult);
     if (apiResult.status !== 200) throw new Error('Request failed');
     //showSuccessMessage();
     
-    const quoteResp = await getMessages();
-    await resultsToForm(quoteResp);
+    //const quoteResp = await getMessages();
+    //await resultsToForm(quoteResp);
 
     console.log('Message Sent!');
 

@@ -19,10 +19,20 @@ async function checkIfScriptExists(scriptPath) {
 async function loadComponentContent(path, containerId) {
   try {
     //console.log(`components/${path}.html`);
-    const response = await fetch(`components/${path}.html`);
-    const html = await response.text();
     const container = document.getElementById(containerId);
+    
+    /*
+    if (container.getAttribute("data-loaded") === "true") {
+      console.log(`Already loaded: ${path}`);
+      return;
+    }
+    */
+
+    const response = await fetch(`components/${path}.html`);
+    if (!response.ok) throw new Error(`Failed to load ${path}`);
+    const html = await response.text();
     container.innerHTML = html;
+    container.setAttribute("data-loaded", "true");
 
     // Load associated JavaScript (e.g., header.js for header.html)
     
@@ -35,6 +45,13 @@ async function loadComponentContent(path, containerId) {
       scriptPath = 'components/js/' + scriptPath + '.js';
     }
     //console.log('script path : ', scriptPath);
+    
+    const fullPath = new URL(scriptPath, document.baseURI).href;
+    if (document.querySelector(`script[src="${scriptPath}"]`)){ 
+    //if ([...document.scripts].some(s => s.src === fullPath)) {
+      //console.log("Already attached script", scriptPath);
+      return;
+    }
 
     const scriptResponse = await fetch(scriptPath);
     if (scriptResponse.ok) {
@@ -42,6 +59,8 @@ async function loadComponentContent(path, containerId) {
       const script = await scriptResponse.text();
       const scriptElement = document.createElement('script');
       scriptElement.textContent = script;
+      scriptElement.src = scriptPath;
+      scriptElement.defer = true;
       document.body.appendChild(scriptElement);
     }
 
