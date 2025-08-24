@@ -133,8 +133,27 @@ function createSnippet(content, query) {
 
 function closeSearchModal() {
     const modalElement = document.getElementById('searchModal');
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    modalInstance.hide();
+    //const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    //modalInstance.hide();
+
+    //const modalElem = document.getElementById(modalName);
+    //const modalInstance = bootstrap.Modal.getInstance(modalElem);
+
+    document.activeElement.blur();  
+    modalElement.classList.remove('show');
+    modalElement.style.display = 'none';
+    modalElement.setAttribute('aria-hidden', 'true');
+
+    // Remove Bootstrap modal classes if present
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+
+    // Remove modal backdrop if exists
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+    }
+    //modalInstance.hide();
 }
 
 // Initialize with a sample search

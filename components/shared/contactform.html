@@ -7,49 +7,46 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <!--
-                    <p class="text-center mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done.</p>
-                    --> 
-                    <!--<a href="https://htmlcodex.com/contact-form">Download Now</a>-->
-                    
                     <div class="wow fadeIn" data-wow-delay="0.3s">
                         <form id = "contactMsgForm">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control" id="name" required maxlength="50" placeholder="Your Name">
-                                        <label for="name">Your Name</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="email" class="form-control" id="email" required maxlength="60" placeholder="Your Email">
-                                        <label for="email">Your Email</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control" id="subject" required maxlength="200" placeholder="Subject">
-                                        <label for="subject">Subject</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating">
-                                        <div id="editor" class="left-border-box" required maxlength="10000" placeholder="Leave a message here" style="height: 150px">
+                            <fieldset id="contactFieldset">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="name" required maxlength="50" placeholder="Your Name">
+                                            <label for="name">Your Name</label>
                                         </div>
-                                        <!--
-                                        <textarea class="form-control" id="message" required maxlength="10000" placeholder="Leave a message here" style="height: 150px"></textarea>
-                                        
-                                        <label for="message">Message</label>
-                                        -->
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" class="form-control" id="email" required maxlength="60" placeholder="Your Email">
+                                            <label for="email">Your Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="subject" required maxlength="200" placeholder="Subject">
+                                            <label for="subject">Subject</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <div id="editor" class="left-border-box" required maxlength="10000" placeholder="Leave a message here" style="height: 150px">
+                                            </div>
+                                            <!--
+                                            <textarea class="form-control" id="message" required maxlength="10000" placeholder="Leave a message here" style="height: 150px"></textarea>
+                                            
+                                            <label for="message">Message</label>
+                                            -->
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100 py-3" id= "btnSendContact" type="submit" disabled onclick="sendMessage();">Send Message</button>
+                                        <p></p>
+                                        <label id="result" style="font-size:medium; font-weight: bold; color: rgb(3, 107, 38); border-color:rgb(1, 40, 13); border-style:inset;"></label>
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" id= "btnSendContact" type="submit" disabled onclick="sendMessage();">Send Message</button>
-                                    <p></p>
-                                    <label id="result" style="font-size:smaller; color: rgb(13, 171, 66); border-color:rgb(5, 151, 51); border-style:inset;"></label>
-                                </div>
-                            </div>
+                            </fieldset>
                         </form>
                     </div>
                 </div>

@@ -1,0 +1,61 @@
+<section class="getstart">
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="getStartModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(221, 222, 236, 0.9);">
+                <div class="modal-body d-flex flex-column align-items-center justify-content-center" style="overflow-y: auto;">
+                    <div class="search-container p-3" style="border: 2px solid white; border-radius: 10px; max-width: 775px; width: 100%; background: rgba(255, 255, 255, 0.2);">
+                        <!-- Title and Close Button Row -->
+                        <div class="d-flex align-items-center mb-3" style="max-width: 775px; width: 100%; position: sticky; top: 0; background: rgba(20,24,62,0.1); z-index: 10; padding: 0.5rem 1rem; border-radius: 5px;">
+                            
+                            <!-- Title -->
+                            <h3 class="text-black text-center flex-grow-1 m-0">How May I Help You?</h3>
+                            
+                            <!-- Close Button -->
+                            <button type="button" class="btn btn-close bg-white ms-2" data-bs-dismiss="modal" aria-label="Close"
+                                    style="width: 2.5rem; height: 2.5rem; font-size: 1rem;" onclick="closeGetStartModal()"></button>
+                        </div>
+                        <div class="wow fadeIn" data-wow-delay="0.2s">
+                            <form id = "getStartForm">
+                                <fieldset id="getStartFieldset">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="getStartName" required maxlength="128" placeholder="Your Name">
+                                                <label for="getStartName">Your Full Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="getStartPhoneNo" required maxlength="15" placeholder="Your Email">
+                                                <label for="getStartPhoneNo">Your Phone No</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="email" class="form-control" id="getStartEmail" required maxlength="200" placeholder="Subject">
+                                                <label for="getStartEmail">Your Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <div id="getStartEditor" class="left-border-box" required maxlength="10000" placeholder="Leave a message here" style="height: 150px">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-primary w-100 py-3" id= "btnGetStart" type="submit" disabled onclick="submitMessage();">Submit</button>
+                                            <p></p>
+                                            <label id="getStartResult" style="font-size:medium; font-weight: bold; color: rgb(3, 107, 38); border-color:rgb(1, 40, 13); border-style:inset;"></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+</section>

@@ -4,6 +4,16 @@
     --secondary: #15ACE1;
     --light: #F4F7FE;
     --dark: #14183E;
+    
+    --primary-blue: #4361ee;
+    --primary-white: #ffffff;
+    --primary-dark: #212529;
+    --secondary-blue: #3a0ca3;
+    --light-gray: #f8f9fa;
+    --text-dark: #333333;
+    --text-light: #f8f9fa;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
 }
 
 
@@ -92,15 +102,21 @@ h6,
 
 .navbar .navbar-nav .nav-link {
     margin-right: 35px;
-    padding: 0;
+    padding: 2;
     color: rgba(255, 255, 255, .7);
     outline: none;
 }
 
-.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    background:#6fa9ef;
+}
+
 .navbar .navbar-nav .nav-link.active {
     color: rgba(255, 255, 255, 1);
     cursor: pointer;
+    border-bottom: 3px solid #e9ecef;
 }
 
 .navbar .dropdown-toggle::after {
@@ -614,7 +630,7 @@ input, textarea {
 }
 
 .left-border-box {
-  border: 2px solid #ccc;      /* Gray border for rest */
+  border: 2px solid white;      /* Gray border for rest */
   border-left: 6px solid red;  /* Only left side in red */
   padding: 12px;
 }
@@ -652,6 +668,11 @@ input, textarea {
     font-size: 0.9rem;
     margin-bottom: 15px;
     display: block;
+}
+
+.result-url:hover {
+    box-shadow: 2px 8px 20px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
 .result-snippet {

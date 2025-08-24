@@ -1,14 +1,14 @@
 [
     {
         "title": "Home Page",
-        "url": "home",
+        "url": "Home",
         "content": "Home. Welcome to our website. We offer various services including web development, design, and digital marketing. Our team is dedicated to providing high-quality solutions for your business needs.",
         "keywords": ["home", "welcome", "services", "company"],
         "lastUpdated": "10-08-2025"
     },
     {
         "title": "Services Overview",
-        "url": "services",
+        "url": "Services",
         "content": "Our services include web development, UI/UX design, and digital marketing strategies. We help businesses establish a strong online presence and reach their target audience effectively.",
         "keywords": ["services", "web development", "design", "digital marketing"],
         "lastUpdated": "11-08-2025"
@@ -22,35 +22,35 @@
     },
     {
         "title": "UI/UX Design",
-        "url": "products",
+        "url": "Products",
         "content": "Home. Our design team creates intuitive user interfaces and engaging user experiences. We focus on usability, accessibility, and aesthetic appeal to create products that users love.",
         "keywords": ["design", "UI", "UX", "user interface", "user experience"],
         "lastUpdated": "12-08-2025"
     },
     {
         "title": "Digital Marketing",
-        "url": "marketing",
+        "url": "Marketing",
         "content": "Our digital marketing services include SEO, social media marketing, email campaigns, and analytics. We help businesses increase their online visibility and reach more customers.",
         "keywords": ["digital marketing", "SEO", "social media", "email marketing", "analytics"],
         "lastUpdated": "13-08-2025"
     },
     {
         "title": "About Us",
-        "url": "about",
+        "url": "About",
         "content": "Home. Learn about our company history, mission, and values. Meet our team of experienced professionals who are passionate about delivering exceptional results for our clients.",
         "keywords": ["about", "company", "team", "mission", "values"],
         "lastUpdated": "14-08-2025"
     },
     {
         "title": "Contact Information",
-        "url": "contact",
+        "url": "Contact",
         "content": "Get in touch with us for inquiries, quotes, or support. Our team is available to answer your questions and discuss how we can help with your project requirements.",
         "keywords": ["contact", "email", "phone", "support", "inquire"],
         "lastUpdated": "15-08-2025"
     },
     {
         "title": "Blog",
-        "url": "blog",
+        "url": "Blog",
         "content": "Read our latest articles on web development trends, design insights, and digital marketing strategies. Stay updated with industry news and best practices.",
         "keywords": ["blog", "articles", "news", "trends", "insights"],
         "lastUpdated": "16-08-2025"

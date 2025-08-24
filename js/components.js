@@ -18,7 +18,7 @@ async function checkIfScriptExists(scriptPath) {
 
 async function loadComponentContent(path, containerId) {
   try {
-    //console.log(`components/${path}.html`);
+    //console.log(containerId, `components/${path}.html`);
     const container = document.getElementById(containerId);
     
     /*
@@ -31,6 +31,7 @@ async function loadComponentContent(path, containerId) {
     const response = await fetch(`components/${path}.html`);
     if (!response.ok) throw new Error(`Failed to load ${path}`);
     const html = await response.text();
+    
     container.innerHTML = html;
     container.setAttribute("data-loaded", "true");
 
@@ -120,28 +121,11 @@ async function loadContent(page) {
 async function loadMenuTitle(page){
   var navPath = page;
   navPath = navPath.charAt(0).toUpperCase() + navPath.slice(1);
+  //console.log(navPath)
 
-  document.getElementById("navItemHeader").innerHTML = navPath;
-  document.getElementById("navItemChild").innerHTML = navPath;
-
+  if(document.getElementById("navItemHeader") !== null) document.getElementById("navItemHeader").innerHTML = navPath;
+  if(document.getElementById("navItemChild") !== null) document.getElementById("navItemChild").innerHTML = navPath;
 }
-
-/*
-function closeDropdown(clickedElement) {
-  // Get the Bootstrap Dropdown instance
-  const dropdownElement = clickedElement.closest('.dropdown');
-  const dropdownToggle = dropdownElement.querySelector('.dropdown-toggle');
-  const dropdown = bootstrap.Dropdown.getInstance(dropdownToggle);
-  
-  // Hide the dropdown
-  if (dropdown) {
-    dropdown.hide();
-  }
-  
-  // Alternative jQuery method (if preferred)
-  // $(dropdownToggle).dropdown('hide');
-}
-*/
 
 async function moveToTop ()
 {

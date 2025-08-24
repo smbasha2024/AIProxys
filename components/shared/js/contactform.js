@@ -111,7 +111,8 @@ document.getElementById('email').addEventListener('input', function() {
 
 async function resultsToForm(strResult) {
   const result = document.getElementById("result");
-  result.innerHTML = "Your Message Sent successfully! We'll be in touch with you shortly." + "<br/><b>PS:</b>" + strResult;
+  result.innerHTML = "Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
+  document.getElementById("contactFieldset").disabled = true;
 }
 
 async function sendMessage() {
