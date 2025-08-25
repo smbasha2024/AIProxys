@@ -54,6 +54,20 @@ async function loadModalContent(page, modalName) {
   window.history.pushState({ page }, '', `#${page}`);
 }
 
+function initModalEditorIfNeeded(){
+  //console.log("Editor initialization.. call...")
+}
+
+async function loadModalContentWithEditor(page, modalName) {
+  //console.log('loadModalContent method');
+  await loadModalComponentContent(page, 'modal-content-container', modalName);
+  await openModal(modalName);
+  //console.log('page - ', page);
+  
+  initModalEditorIfNeeded();
+  window.history.pushState({ page }, '', `#${page}`);
+}
+
 async function openModal(modalName) {
     // Get the modal element
     const modalElem = document.getElementById(modalName);

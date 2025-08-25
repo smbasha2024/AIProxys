@@ -49,64 +49,47 @@ document.getElementById('email').addEventListener('input', function() {
 /***************************************************************************/
 //        Quill, Rich Text Editor, settings and initialization
 /***************************************************************************/
-// Custom fonts definition
-  const contFont = Quill.import('formats/font');
-  contFont.allowlist = [
-      "arial",
-      "verdana",
-      "times-new-roman",
-      'roboto', 
-      'lato', 
-      'open-sans', 
-      'montserrat', 
-      'raleway',
-      'sans-serif',
-      'serif',
-      'monospace'
-  ];
-  Quill.register(contFont, true);
-  
-  // ✅ Use class-based size attribution (instead of style)
-  const contSize = Quill.import("attributors/class/size");
-  contSize.whitelist = [
-      "extra-small",
-      "small",
-      "medium",
-      "large",
-      "extra-large",
-      false // normal size
-  ];
-  Quill.register(contSize, true);
-  
-  // Initialize Quill
-  const contactQuill = new Quill('#contactEditor', {
-      modules: {
-          toolbar: [
-              // Font formatting
-              // Font formatting
-              [{ font: contFont.allowlist }],
-              [{ size: contSize.whitelist }],
-              // Text formatting
-              ['bold', 'italic', 'underline', 'strike'],
-              [{ 'color': [] }, { 'background': [] }],
-              [{ 'align': [] }],
-              
-              // Lists and indentation
-              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-              //[{ 'indent': '-1'}, { 'indent': '+1' }],
-              
-              // Headers
-              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-              
-              // Other
-              //['link', 'image']
-              ['clean']
-          ]
-      },
-      placeholder: 'Compose your email here...',
-      theme: 'snow'
-  });
-  
+// Initialize editors when DOM is ready
+function onDOMReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback(); // DOM is already ready
+  }
+}
+
+onDOMReady(() => {
+  // Your Quill initialization or other code here
+  initEditorIfNeeded()
+});
+
+function initEditorIfNeeded(){
+  QuillManager.destroyEditor('contactEditor');
+
+  if (document.readyState !== 'loading') {
+    if (document.getElementById('contactMsgForm')) {
+      const container = document.getElementById('contactEditor');
+      QuillManager.getEditor('contactEditor');
+      container.style.display = 'block';
+    }
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('contactMsgForm')) {
+        QuillManager.getEditor('contactEditor');
+      }
+    });
+  }
+}
+
+function getEditorContent() {
+    const content = QuillManager.getContent('contactEditor');
+    return content;
+}
+function clearEditor() {
+    QuillManager.clearEditor('contactEditor');
+}
+
+
 /************************************* Form Event Handlers Calls ***************************/
 //        All Form Event Handlers are here
 /***************************************************************************/
@@ -158,7 +141,7 @@ async function sendEmail(){
     const url = apiEmailUrl;
     const email = [apiEmail];
     const subject = txtEmailSubject.value;
-    const message = contactQuill.root.innerHTML // txtEmailMessage.value
+    const message =  getEditorContent();// txtEmailMessage.value
     const name = txtCustomerName.value
     const customer_email = txtCustomerEmail.value;
 

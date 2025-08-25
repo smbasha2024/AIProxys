@@ -114,7 +114,25 @@ async function loadContent(page) {
   if((page !== 'home') && (page !== 'index') && (page !== '#')) {
     loadMenuTitle(page);
   }
-  
+
+  window.history.pushState({ page }, '', `#${page}`);
+}
+
+function initEditorIfNeeded(){
+  //console.log("Editor initialization.. call...")
+}
+
+// Load main content (Home, FAQ, Newsletter)
+async function loadContentWithEditor(page) {
+  await loadComponent(page, 'content-container','');
+  //console.log('page - ', page);
+
+  if((page !== 'home') && (page !== 'index') && (page !== '#')) {
+    loadMenuTitle(page);
+  }
+
+  initEditorIfNeeded();
+
   window.history.pushState({ page }, '', `#${page}`);
 }
 
@@ -134,6 +152,7 @@ async function moveToTop ()
     behavior: 'smooth'
   });
 }
+
 // Initialize the app
 window.addEventListener('DOMContentLoaded', async () => {
   await loadStaticComponents();

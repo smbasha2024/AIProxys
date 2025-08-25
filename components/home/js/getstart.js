@@ -2,6 +2,7 @@ apiUrl = window.AppConfig.apiBaseUrl;
 apiEmailUrl = apiUrl + "emails";
 apiEmail = window.AppConfig.apiBaseEmail;
 //console.log("In getstart.js")
+//QuillManager.listAllEditors();
 
 //Form Validations..................
 const txtCustName = document.getElementById('getStartName');
@@ -10,7 +11,7 @@ const txtCustPhone = document.getElementById('getStartPhoneNo');
 const btnGetStart = document.getElementById('btnGetStart');
 const getStartForm = document.getElementById('getStartForm');
 
-const mandatoryFields = getStartForm.querySelectorAll('[required]');
+const getSartMandFields = getStartForm.querySelectorAll('[required]');
 
 // Check form validity on input
 getStartForm.addEventListener('input', () => {
@@ -24,123 +25,54 @@ btnGetStart.disabled = !getStartForm.checkValidity();
 /***************************************************************************/
 //        Quill, Rich Text Editor, settings and initialization
 /***************************************************************************/
-// Custom fonts definition
-if (!window.__getStartQuillSetup) {
-    const Font = Quill.import('formats/font');
-    Font.allowlist = [
-        "arial",
-        "verdana",
-        "times-new-roman",
-        'roboto', 
-        'lato', 
-        'open-sans', 
-        'montserrat', 
-        'raleway',
-        'sans-serif',
-        'serif',
-        'monospace'
-    ];
-    Quill.register(Font, true);
-
-    // ✅ Use class-based size attribution (instead of style)
-    const Size = Quill.import("attributors/class/size");
-    Size.whitelist = [
-        "extra-small",
-        "small",
-        "medium",
-        "large",
-        "extra-large",
-        false // normal size
-    ];
-    Quill.register(Size, true);
-
-    window.__getStartQuillSetup = true;
-}
-
-// Persist the instance across dynamic loads
-let getStartQuill = window.__getStartQuillInstance || undefined;
-
-function createQuill(container) {
-    return new Quill(container, {
-            modules: {
-                toolbar: [
-                    // Font formatting
-                    // Font formatting
-                    [{ font: Quill.import('formats/font').allowlist }],
-                    [{ size: Quill.import("attributors/class/size").whitelist }],
-                    // Text formatting
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'align': [] }],
-                    
-                    // Lists and indentation
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    //[{ 'indent': '-1'}, { 'indent': '+1' }],
-                    
-                    // Headers
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    
-                    // Other
-                    //['link', 'image']
-                    ['clean']
-                ]
-            },
-            placeholder: 'Leave us your message...',
-            theme: 'snow'
-    });
-}
-
-// Mount if needed (container must be the *current* #getStartEditor)
-function mountQuillIfNeeded() {
-  const container = document.getElementById('getStartEditor');
-  if (!container) return; // modal content not injected yet
-
-  const needsRemount =
-    !getStartQuill ||
-    !getStartQuill.root?.isConnected ||               // old instance detached from DOM
-    !container.contains(getStartQuill.root);          // instance bound to a different (old) container
-
-  if (needsRemount) {
-    if (getStartQuill) getStartQuill.off();                   // clean listeners on stale instance
-    getStartQuill = createQuill(container);
-    window.__getStartQuillInstance = getStartQuill;   // persist for next dynamic load
+// Initialize editors when DOM is ready
+function onDOMReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback(); // DOM is already ready
   }
 }
 
-// Call after the modal HTML is injected / when it becomes visible.
-// If you use Bootstrap 5:
-document.addEventListener('shown.bs.modal', (e) => {
-  if (e.target && e.target.id === 'getStartModal') {
-    mountQuillIfNeeded();
-  }
+onDOMReady(() => {
+  // Your Quill initialization or other code here
+  initModalEditorIfNeeded()
 });
 
-// If you manually show/hide the modal or inject HTML via components.js,
-// call mountQuillIfNeeded() right after you inject the modal content or set it visible:
-function openGetStartModal() {
-  // ...your code that injects/opens #getStartModal...
-  mountQuillIfNeeded();
+function initModalEditorIfNeeded(){
+  QuillManager.destroyEditor('getStartEditor');
+
+  if (document.readyState !== 'loading') {
+    if (document.getElementById('getStartForm')) {
+      const container = document.getElementById('getStartEditor');
+      QuillManager.getEditor('getStartEditor');
+      container.style.display = 'block';
+    }
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('getStartForm')) {
+        QuillManager.getEditor('getStartEditor');
+      }
+    });
+  }
 }
 
-// Optional: initialize immediately if the DOM is already ready and modal is visible
-if (document.readyState !== 'loading') {
-  if (document.getElementById('getStartModal')?.classList.contains('show')) {
-    mountQuillIfNeeded();
-  }
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('getStartModal')?.classList.contains('show')) {
-      mountQuillIfNeeded();
-    }
-  });
+function getModalEditorContent() {
+    const content = QuillManager.getContent('getStartEditor');
+    return content;
+}
+function clearModalEditor() {
+    QuillManager.clearEditor('getStartEditor');
 }
 
 async function closeGetStartModal() {
     //console.log("In closeModal")
+    QuillManager.destroyEditor('getStartEditor');
     const modalElem = document.getElementById('getStartModal');
+
     //const modalInstance = bootstrap.Modal.getInstance(modalElem);
-/*
-    document.activeElement.blur();  
+  
+    //document.activeElement.blur();  
     modalElem.classList.remove('show');
     modalElem.style.display = 'none';
     modalElem.setAttribute('aria-hidden', 'true');
@@ -148,8 +80,10 @@ async function closeGetStartModal() {
     // Remove Bootstrap modal classes if present
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
-*/
+  
 }
+
+
 
 /************************************* Form Event Handlers Calls ***************************/
 //        All Form Event Handlers are here
@@ -200,7 +134,7 @@ async function sendEmail(){
     const email = [apiEmail];
 
     const subject = "New User: Getting Started...";
-    const message = getStartQuill.root.innerHTML // txtEmailMessage.value
+    const message = getModalEditorContent(); //getStartQuill.root.innerHTML // txtEmailMessage.value
     const name = txtCustName.value
     const customer_email = txtCustEmail.value;
     const customer_phone = txtCustPhone.value;
