@@ -3,9 +3,10 @@ apiEmailUrl = apiUrl + "emails";
 apiEmail = window.AppConfig.apiBaseEmail;
 //console.log("In getstart.js")
 
-const txtCustomerName = document.getElementById('getStartName');
-const txtCustomerEmail = document.getElementById('getStartEmail');
-const txtCustomerPhone = document.getElementById('getStartPhoneNo');
+//Form Validations..................
+const txtCustName = document.getElementById('getStartName');
+const txtCustEmail = document.getElementById('getStartEmail');
+const txtCustPhone = document.getElementById('getStartPhoneNo');
 const btnGetStart = document.getElementById('btnGetStart');
 const getStartForm = document.getElementById('getStartForm');
 
@@ -57,7 +58,7 @@ if (!window.__getStartQuillSetup) {
 }
 
 // Persist the instance across dynamic loads
-let quill = window.__getStartQuillInstance || undefined;
+let getStartQuill = window.__getStartQuillInstance || undefined;
 
 function createQuill(container) {
     return new Quill(container, {
@@ -95,14 +96,14 @@ function mountQuillIfNeeded() {
   if (!container) return; // modal content not injected yet
 
   const needsRemount =
-    !quill ||
-    !quill.root?.isConnected ||               // old instance detached from DOM
-    !container.contains(quill.root);          // instance bound to a different (old) container
+    !getStartQuill ||
+    !getStartQuill.root?.isConnected ||               // old instance detached from DOM
+    !container.contains(getStartQuill.root);          // instance bound to a different (old) container
 
   if (needsRemount) {
-    if (quill) quill.off();                   // clean listeners on stale instance
-    quill = createQuill(container);
-    window.__getStartQuillInstance = quill;   // persist for next dynamic load
+    if (getStartQuill) getStartQuill.off();                   // clean listeners on stale instance
+    getStartQuill = createQuill(container);
+    window.__getStartQuillInstance = getStartQuill;   // persist for next dynamic load
   }
 }
 
@@ -199,10 +200,10 @@ async function sendEmail(){
     const email = [apiEmail];
 
     const subject = "New User: Getting Started...";
-    const message = quill.root.innerHTML // txtEmailMessage.value
-    const name = txtCustomerName.value
-    const customer_email = txtCustomerEmail.value;
-    const customer_phone = txtCustomerPhone.value;
+    const message = getStartQuill.root.innerHTML // txtEmailMessage.value
+    const name = txtCustName.value
+    const customer_email = txtCustEmail.value;
+    const customer_phone = txtCustPhone.value;
 
     // Encode HTML for safe transmission
     const encodedBody = btoa(unescape(encodeURIComponent(message))); // Base64 encode

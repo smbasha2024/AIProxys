@@ -1,3 +1,7 @@
+apiUrl = window.AppConfig.apiBaseUrl;
+apiEmailUrl = apiUrl + "emails";
+apiEmail = window.AppConfig.apiBaseEmail;
+
 // To scroll the screen till to the contact form
 const strsendMsgBtnText = "Send Message";
 const contactForm = document.getElementById("contactform");
@@ -46,8 +50,8 @@ document.getElementById('email').addEventListener('input', function() {
 //        Quill, Rich Text Editor, settings and initialization
 /***************************************************************************/
 // Custom fonts definition
-  const Font = Quill.import('formats/font');
-  Font.allowlist = [
+  const contFont = Quill.import('formats/font');
+  contFont.allowlist = [
       "arial",
       "verdana",
       "times-new-roman",
@@ -60,11 +64,11 @@ document.getElementById('email').addEventListener('input', function() {
       'serif',
       'monospace'
   ];
-  Quill.register(Font, true);
+  Quill.register(contFont, true);
   
   // ✅ Use class-based size attribution (instead of style)
-  const Size = Quill.import("attributors/class/size");
-  Size.whitelist = [
+  const contSize = Quill.import("attributors/class/size");
+  contSize.whitelist = [
       "extra-small",
       "small",
       "medium",
@@ -72,16 +76,16 @@ document.getElementById('email').addEventListener('input', function() {
       "extra-large",
       false // normal size
   ];
-  Quill.register(Size, true);
+  Quill.register(contSize, true);
   
   // Initialize Quill
-  const quill = new Quill('#editor', {
+  const contactQuill = new Quill('#contactEditor', {
       modules: {
           toolbar: [
               // Font formatting
               // Font formatting
-              [{ 'font': Font.allowlist }],
-              [{ size: Size.whitelist }],
+              [{ font: contFont.allowlist }],
+              [{ size: contSize.whitelist }],
               // Text formatting
               ['bold', 'italic', 'underline', 'strike'],
               [{ 'color': [] }, { 'background': [] }],
@@ -151,10 +155,10 @@ async function sendMessage() {
 //        All API calls are here
 /***************************************************************************/
 async function sendEmail(){
-    const url = 'http://127.0.0.1:8000/emails';
-    const email = ["smbasha2024@gmail.com"];
+    const url = apiEmailUrl;
+    const email = [apiEmail];
     const subject = txtEmailSubject.value;
-    const message = quill.root.innerHTML // txtEmailMessage.value
+    const message = contactQuill.root.innerHTML // txtEmailMessage.value
     const name = txtCustomerName.value
     const customer_email = txtCustomerEmail.value;
 
