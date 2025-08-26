@@ -5,17 +5,13 @@ apiEmail = window.AppConfig.apiBaseEmail;
 //QuillManager.listAllEditors();
 
 //Form Validations..................
-const txtCustName = document.getElementById('getStartName');
-const txtCustEmail = document.getElementById('getStartEmail');
-const txtCustPhone = document.getElementById('getStartPhoneNo');
-const btnGetStart = document.getElementById('btnGetStart');
 const getStartForm = document.getElementById('getStartForm');
-
-const getSartMandFields = getStartForm.querySelectorAll('[required]');
+const btnGetStart = document.getElementById('btnGetStart');
+//const getSartMandFields = getStartForm.querySelectorAll('[required]');
 
 // Check form validity on input
 getStartForm.addEventListener('input', () => {
-  console.log('Form valid?', getStartForm.checkValidity());
+  //console.log('Form valid?', getStartForm.checkValidity());
   btnGetStart.disabled = !getStartForm.checkValidity();
 });
 
@@ -69,8 +65,6 @@ async function closeGetStartModal() {
     //console.log("In closeModal")
     QuillManager.destroyEditor('getStartEditor');
     const modalElem = document.getElementById('getStartModal');
-
-    //const modalInstance = bootstrap.Modal.getInstance(modalElem);
   
     //document.activeElement.blur();  
     modalElem.classList.remove('show');
@@ -80,9 +74,9 @@ async function closeGetStartModal() {
     // Remove Bootstrap modal classes if present
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
-  
-}
 
+    document.getElementById("getStartFieldset").disabled = false;
+}
 
 
 /************************************* Form Event Handlers Calls ***************************/
@@ -91,15 +85,18 @@ async function closeGetStartModal() {
 async function resultsToForm(strResult) {
   const result = document.getElementById("getStartResult");
   result.innerHTML = "Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
+  
   document.getElementById("getStartFieldset").disabled = true;
 }
 
 async function submitMessage() {
   try {
-    btnGetStart.classList.add('loading');
+    const btnSubmit = document.getElementById('btnGetStart');
 
-    btnGetStart.disabled = true;
-    btnGetStart.textContent = 'Submitting...';
+    btnSubmit.classList.add('loading');
+
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Submitting...';
     document.body.style.cursor = 'wait';
 
     //console.log("calling sendEmail...")
@@ -119,10 +116,10 @@ async function submitMessage() {
     console.log('Error :', error);
   } finally {
     // Reset state
-    btnGetStart.disabled = false;
-    btnGetStart.textContent = "Submit";
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = "Submit";
     document.body.style.cursor = 'default';
-    btnGetStart.classList.remove('loading');
+    btnSubmit.classList.remove('loading');
   }
 }
 
@@ -130,14 +127,21 @@ async function submitMessage() {
 //        All API calls are here
 /***************************************************************************/
 async function sendEmail(){
+  const txtCustName = document.getElementById('getStartName');
+  const txtCustEmail = document.getElementById('getStartEmail');
+  const txtCustPhone = document.getElementById('getStartPhoneNo');
+  const txtCustOrg = document.getElementById('getStartCompany');
+
     const url = apiEmailUrl;
     const email = [apiEmail];
 
     const subject = "New User: Getting Started...";
     const message = getModalEditorContent(); //getStartQuill.root.innerHTML // txtEmailMessage.value
-    const name = txtCustName.value
+    const name = txtCustName.value;
     const customer_email = txtCustEmail.value;
     const customer_phone = txtCustPhone.value;
+    const customer_org = txtCustOrg.value;
+    const extra_params = {"CustomerPhone": customer_phone, "CustomerOrganization": customer_org};
 
     // Encode HTML for safe transmission
     const encodedBody = btoa(unescape(encodeURIComponent(message))); // Base64 encode
@@ -147,12 +151,14 @@ async function sendEmail(){
         subject,
         message: encodedBody,
         name,
-        customer_email
+        customer_email,
+        extra_params
     };
-    console.log(payload);
+    //console.log(payload);
+
     try {
         const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json', // Specify JSON data

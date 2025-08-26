@@ -48,12 +48,21 @@ async function loadComponentContent(path, containerId) {
     //console.log('script path : ', scriptPath);
     
     const fullPath = new URL(scriptPath, document.baseURI).href;
+    
     if (document.querySelector(`script[src="${scriptPath}"]`)){ 
     //if ([...document.scripts].some(s => s.src === fullPath)) {
       //console.log("Already attached script", scriptPath);
       return;
     }
-
+    
+   /*
+    const existingScript = document.querySelector(`script[src="${scriptPath}"]`);
+    if (existingScript) {
+        // Remove it so that we can reload fresh
+        existingScript.remove();
+        console.log('Removed script file', scriptPath);
+    }
+    */
     const scriptResponse = await fetch(scriptPath);
     if (scriptResponse.ok) {
       //const scriptResponse = await fetch(scriptPath);
