@@ -17,17 +17,17 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
-                        <a onclick="loadContent('home'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link active">Home</a>
-                        <a onclick="loadContent('about'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link">About</a>
-                        <a onclick="loadContent('products'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link">Products</a>
-                        <a onclick="loadContent('services'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link">Services</a>
+                        <a onclick="loadContent('home'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link active" id="nav-home">Home</a>
+                        <a onclick="loadContent('about'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-about">About</a>
+                        <a onclick="loadContent('products'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-products">Products</a>
+                        <a onclick="loadContent('services'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-services">Services</a>
                         <div class="nav-item dropdown">
                             <a href="#" onclick="$('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Blogs</a>
                             <div class="dropdown-menu bg-light mt-2">
-                                <a onclick="loadContent('casestudy');" class="dropdown-item">Case Studies</a>
-                                <a onclick="loadContent('team');" class="dropdown-item">Our Team</a>
-                                <a onclick="loadContent('faq');" class="dropdown-item">FAQs</a>
-                                <a onclick="loadContent('testimonials');" class="dropdown-item">Testimonials</a>
+                                <a onclick="loadContent('casestudy');" class="dropdown-item" id="nav-casestudy">Case Studies</a>
+                                <a onclick="loadContent('team');" class="dropdown-item" id="nav-team">Our Team</a>
+                                <a onclick="loadContent('faq');" class="dropdown-item" id="nav-faq">FAQs</a>
+                                <a onclick="loadContent('testimonials');" class="dropdown-item" id="nav-testimonials">Testimonials</a>
                                 <!--
                                 <a href="404.html" class="dropdown-item">404 Page</a>
                                 -->
