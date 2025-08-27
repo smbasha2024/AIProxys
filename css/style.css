@@ -5,15 +5,23 @@
     --light: #F4F7FE;
     --dark: #14183E;
     
-    --primary-blue: #4361ee;
+    
     --primary-white: #ffffff;
     --primary-dark: #212529;
-    --secondary-blue: #3a0ca3;
-    --light-gray: #f8f9fa;
+    
+    
     --text-dark: #333333;
     --text-light: #f8f9fa;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+
+    --primary-blue: #1a4b8c;
+    --secondary-blue: #2d6ec4;
+    --light-blue: #e0e8f5;
+    --milky-white: #f8f9fa;
+    --light-gray: #e9ecef;
+    --medium-gray: #6c757d;
+    --dark-gray: #343a40;
 }
 
 

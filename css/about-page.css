@@ -1,0 +1,122 @@
+/****************************************************************************************/
+/*            About Page styles                       */
+/***************************************************************************************/
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+    height: 100%;
+    padding:22px; 
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.key-card {
+    border-left: 4px solid var(--primary-blue);
+}
+
+.bg-light-custom {
+    background-color: var(--light-blue);
+}
+
+.chip {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primary-blue);
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 10rem;
+    background-color: var(--light-blue);
+}
+
+.timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0px;
+    height: 100%;
+    width: 1.5px; /* Slightly thicker line */
+    background: linear-gradient(to bottom, var(--secondary-blue), var(--primary-blue));
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(45, 110, 196, 0.3);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -3rem;
+    top: 1px;
+    width: 24px; /* Slightly larger */
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    border: 4px solid var(--secondary-blue); /* Darker border */
+    box-shadow: 0 0 0 3px var(--light-blue); /* Additional outline */
+    z-index: 2;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--light-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.stat-label {
+    color: var(--medium-gray);
+    font-weight: 500;
+}
+
+/* Style 1: Basic Blue Line Underline */
+.style-1 {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: var(--primary-blue);
+    margin: 0 0 30px 0;
+    padding-bottom: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.style-1::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 4px;
+    width: 150px;
+    background: var(--primary-blue);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
