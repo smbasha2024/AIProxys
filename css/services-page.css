@@ -1,0 +1,68 @@
+/* Services Process */
+.process {
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto 60px;
+}
+
+.process-steps {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.step {
+    flex: 1;
+    min-width: 300px;
+    margin: 0 15px 30px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.step:hover {
+    transform: translateY(-10px);
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: #3a7bd5;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+}
+
+.step h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #1a2a6c;
+}
+
+/* Approach Section */
+.approach {
+    background: linear-gradient(135deg, var(--secondary-blue), #3a7bd5);
+    color: white;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.approach h2:after {
+    background: #6ccef5;
+    text-align: center;
+}
+
+.approach-content {
+    text-align: left;
+    max-width: 100%;
+    margin: 20px 20px;
+}

@@ -1,0 +1,349 @@
+/* Bots Grid */
+.bots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 30px;
+}
+
+.bot-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+}
+
+.bot-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.bot-icon {
+    background: linear-gradient(135deg, #3a7bd5, #1a2a6c);
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--primary-white);
+    font-size: 2.5rem;
+}
+
+.bot-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.bot-content {
+    padding: 25px;
+    flex-grow: 1;
+}
+
+.bot-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #1a2a6c;
+}
+
+.bot-card p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.bot-features {
+    margin-top: 20px;
+}
+
+.bot-features h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--secondary-blue);
+}
+
+.features-list {
+    list-style: none;
+}
+
+.features-list li {
+    margin-bottom: 8px;
+    
+    color: var(--secondary-blue);
+}
+
+.features-list li i {
+    color: #3a7bd5;
+    
+}
+
+/* Benefits Section */
+.benefits {
+    background: linear-gradient(135deg, var(--secondary-blue), #3a7bd5);
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.benefits h2:after {
+    background: #6ccef5;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.benefit-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    backdrop-filter: blur(5px);
+}
+
+.benefit-card i {
+    font-size: 2.5rem;
+    color: #6ccef5;
+    margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+ /* Product Categories */
+.category {
+    margin-bottom: 60px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.category-icon {
+    background: linear-gradient(135deg, #3a7bd5, #1a2a6c);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+    color: var(--primary-white);
+    font-size: 2rem;
+}
+
+.category-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.category-title {
+    font-size: 2rem;
+    color: #1a2a6c;
+}
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.product-content {
+    padding: 25px;
+}
+
+.product-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #1a2a6c;
+}
+
+.product-card p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.product-features {
+    margin-top: 20px;
+}
+
+.product-features h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #3a7bd5;
+}
+
+.features-list {
+    list-style: none;
+}
+
+.features-list li {
+    margin-bottom: 8px;
+    
+}
+
+.features-list li i {
+    color: #3a7bd5;
+    
+}
+
+.product-others{
+    background-color: var(--light-blue);
+    margin-top: 10px;
+}
+
+/* Customization Section */
+.customization {
+    background: linear-gradient(135deg, #1a2a6c, #3a7bd5);
+    color: white;
+}
+
+.customization h2:after {
+    background: #6ccef5;
+}
+
+.customization-container {
+    max-width: 100%;
+    
+    background: white;
+    border-radius: 16px;
+    padding: 50px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    align-self: center;
+    margin: 50px 200px 50px 200px;
+}
+
+.customization-content {
+    text-align: center;
+    
+    font-size: 1.2rem;
+    color: #555;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Customization grid layout */
+.customization-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.customization-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+    border-left: 4px solid #2d6ec4;
+}
+
+.customization-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background: #eef2f7;
+}
+
+.customization-icon {
+    width: 50px;
+    height: 50px;
+    background: #e0e8f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+    color: #1a4b8c;
+    font-size: 1.3rem;
+}
+
+.customization-content h3 {
+    color: #1a4b8c;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+    text-align: left;
+}
+
+.customization-content p {
+    color: #555;
+    line-height: 1.5;
+    font-size: 1rem;
+    text-align: left;
+}
+
+/* Decorative elements */
+.decoration {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.decoration span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #2d6ec4;
+    border-radius: 50%;
+    margin: 0 8px;
+}
+
+.decoration span:nth-child(2) {
+    background: #4a8ad9;
+    width: 16px;
+    height: 16px;
+}
+
+.decoration span:nth-child(3) {
+    background: #7aaae8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .customization-container {
+        padding: 30px 20px;
+    }
+    
+    .customization-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .customization-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+        align-self: center;
+    }
+}

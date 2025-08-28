@@ -17,7 +17,7 @@
 }
 
 .key-card {
-    border-left: 4px solid var(--primary-blue);
+    border-left: 4px solid var(--secondary-blue);
 }
 
 .bg-light-custom {
@@ -30,7 +30,7 @@
     font-size: 0.75em;
     font-weight: 700;
     line-height: 1;
-    color: var(--primary-blue);
+    color: var(--secondary-blue);
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
@@ -117,6 +117,28 @@
     height: 4px;
     width: 150px;
     background: var(--primary-blue);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
+
+.style-2 {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: var(--primary-white);
+    margin: 0 0 30px 0;
+    padding-bottom: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.style-2::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 4px;
+    width: 150px;
+    background: var(--primary-white);
     border-radius: 2px;
     transform: translateX(-50%);
 }
