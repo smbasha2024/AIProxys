@@ -1,0 +1,191 @@
+/*** Team ***/
+.team-item {
+    background: #FFFFFF;
+    transition: all 0.4s ease; 
+    border: 1px solid transparent;
+}
+
+.team-item:hover , .h5:hover{
+    background-color: var(--secondary-blue);
+    border-color: var(--primary);
+    color: var(--primary-white);
+
+    transform: translateY(-8px); /* subtle lift effect */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* shadow */
+}
+
+.team-item:hover h5 {
+    color: #ffffff; /* white */
+    transition: color 0.3s ease; /* smooth transition */
+}
+
+/* Team Section */
+.team-section {
+    padding: 40px 0;
+}
+
+.team-section-title {
+    text-align: center;
+    font-size: 2.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.team-section-title:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -15px;
+    height: 4px;
+    width: 80px;
+    background: var(--secondary-blue);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 2rem;
+    margin-bottom: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.team-member {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-8px);
+}
+
+.member-image {
+    height: 20rem;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.member-info {
+    padding: 25px;
+    text-align: center;
+}
+
+.member-name {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+}
+
+.member-role {
+    color: var(--secondary-blue);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.member-bio {
+    color: var(--medium-gray);
+    margin-bottom: 20px;
+}
+
+.member-social {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--light-blue);
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* Advisory Board */
+.advisory-board {
+    background: var(--light-blue);
+    padding-bottom: 0px;
+    padding-top: 20px;
+    border-radius: 12px;
+}
+
+.advisor-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    margin-bottom: 30px;
+    transition: all 0.4s ease; 
+}
+.advisor-card:hover{
+    transform: translateY(-8px); /* subtle lift effect */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* shadow */
+}
+
+.advisor-name {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+}
+
+.advisor-role {
+    color: var(--secondary-blue);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.advisor-bio {
+    color: var(--medium-gray);
+}
+
+/* CTA Section */
+.team-cta-section {
+    text-align: center;
+    /*padding: 60px 0;*/
+    padding-bottom: 30px;
+    padding-top: 30px;
+    background: var(--light-gray);
+    margin-top: 40px;
+    border-radius: 12px;
+}
+
+.team-cta-title {
+    font-size: 2.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+}
+
+.team-btn-primary {
+    display: inline-block;
+    background: var(--medium-gray);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.team-btn-primary:hover {
+    background: var(--secondary-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: white;
+}
