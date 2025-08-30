@@ -12,16 +12,16 @@
             <br>
             <div class="testimonials">
                 <div class="testimonial-filters">
-                    <button class="filter-btn active">All</button>
-                    <button class="filter-btn">Healthcare</button>
-                    <button class="filter-btn">Education</button>
-                    <button class="filter-btn">E-Commerce</button>
-                    <button class="filter-btn">Enterprise</button>
+                    <button class="filter-btn active" data-target="tm-all" data-filter="tm-all">All</button>
+                    <button class="filter-btn" data-target="tm-healthcare" data-filter="tm-healthcare">Healthcare</button>
+                    <button class="filter-btn" data-target="tm-education" data-filter="tm-education">Education</button>
+                    <button class="filter-btn" data-target="tm-ecomm" data-filter="tm-ecomm">E-Commerce</button>
+                    <button class="filter-btn" data-target="tm-enterprise" data-filter="tm-enterprise">Enterprise</button>
                 </div>
                 
                 <div class="testimonial-grid">
                     <!-- Testimonial 1 -->
-                    <div class="testimonial-card">
+                    <div id="tm-healthcare" class="testimonial-card" data-industry="tm-healthcare">
                         <div class="testimonial-content">
                             <p class="testimonial-text">The Virtual Receptionist agent transformed our patient experience. We reduced front desk workload by 60% and improved patient satisfaction scores dramatically.</p>
                             <div class="testimonial-author">
@@ -48,7 +48,7 @@
                     </div>
                     
                     <!-- Testimonial 2 -->
-                    <div class="testimonial-card">
+                    <div id="tm-education" class="testimonial-card" data-industry="tm-education">
                         <div class="testimonial-content">
                             <p class="testimonial-text">Our CBSE Math Tutor agent has been a game-changer. Students who struggled are now excelling, and teachers have more time for personalized instruction.</p>
                             <div class="testimonial-author">
@@ -75,7 +75,7 @@
                     </div>
                     
                     <!-- Testimonial 3 -->
-                    <div class="testimonial-card">
+                    <div id="tm-ecomm" class="testimonial-card" data-industry="tm-ecomm">
                         <div class="testimonial-content">
                             <p class="testimonial-text">The Ecommerce Assistant agent increased our conversion rate by 27% and reduced cart abandonment by 41%. The ROI was evident within the first quarter.</p>
                             <div class="testimonial-author">
@@ -102,7 +102,7 @@
                     </div>
                     
                     <!-- Testimonial 4 -->
-                    <div class="testimonial-card">
+                    <div id="tm-enterprise" class="testimonial-card" data-industry="tm-enterprise">
                         <div class="testimonial-content">
                             <p class="testimonial-text">Our Invoice Processing agent automated 85% of our accounts payable workflow, reducing errors and processing time significantly.</p>
                             <div class="testimonial-author">
@@ -129,7 +129,7 @@
                     </div>
                     
                     <!-- Testimonial 5 -->
-                    <div class="testimonial-card">
+                    <div id="tm-enterprise" class="testimonial-card" data-industry="tm-enterprise">
                         <div class="testimonial-content">
                             <p class="testimonial-text">The IT Help Desk agent resolved 70% of tier-1 support tickets automatically, freeing our technicians to focus on more complex issues.</p>
                             <div class="testimonial-author">
@@ -156,7 +156,7 @@
                     </div>
                     
                     <!-- Testimonial 6 -->
-                    <div class="testimonial-card">
+                    <div id="tm-enterprise" class="testimonial-card" data-industry="tm-enterprise">
                         <div class="testimonial-content">
                             <p class="testimonial-text">The customized Compliance Officer agent keeps us updated with regulatory changes and has reduced compliance-related issues by 92%.</p>
                             <div class="testimonial-author">
@@ -171,7 +171,7 @@
                             </div>
                         </div>
                         <div class="testimonial-meta">
-                            <span class="testimonial-industry">Financial Services</span>
+                            <span class="testimonial-industry">Enterprise</span>
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -232,7 +232,7 @@
         <div class="cta-section">
             <div class="container">
                 <h2 class="cta-title">Join Our Satisfied Clients</h2>
-                <a class="cta-btn-primary py-sm-3 px-sm-5 rounded-pill animated slideInRight">Start Your Project Today</a>
+                <a class="cta-btn-primary py-sm-3 px-sm-5 rounded-pill animated slideInRight" onclick="loadModalContentWithEditor('home/getstart', 'getStartModal');">Start Your Project Today</a>
             </div>
         </div>
 
