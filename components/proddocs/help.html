@@ -6,8 +6,157 @@
     <div id="shared-search" data-subcomponent="shared/search"></div>
 
     <!-- Help Start -->
-    <div class="container-fluid bg-light py-5">
-        <p>Help</p>
+    <div class="container-fluid bg-light">
+        <section class="help-content-section">
+            <div class="container">
+                <h2>Help Center</h2>
+                <h4 class="text-center">Find answers to common questions and get support for our Agentic AI solutions</h4>
+                
+                <div class="help-content">
+                    <div class="help-section">
+                        <h3><i class="fas fa-question-circle text-primary me-2"></i> General</h3>
+                        
+                        <ul class="help-faq-list">
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    What are Agentic AI Bots? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Agentic AI Bots are advanced artificial intelligence systems that can perceive, reason, and take action to achieve specific goals. Unlike traditional chatbots that simply respond to queries, our Agentic AI Bots can initiate actions, make decisions, and work autonomously within defined parameters.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    How are your AI solutions different from standard automation? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Our Agentic AI solutions go beyond simple rule-based automation by incorporating reasoning capabilities, adaptability to new situations, and the ability to make context-aware decisions. They can handle complex workflows that would typically require human intervention.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    What industries do you serve? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>We serve a wide range of industries including healthcare, education, hospitality, retail, finance, and manufacturing. Our solutions are adaptable to virtually any sector that can benefit from intelligent automation and AI assistance.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-cogs text-primary me-2"></i> Implementation</h3>
+                        
+                        <ul class="help-faq-list">
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    How long does it take to implement an Agentic AI solution? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Implementation time varies based on the complexity of the solution and the level of customization required. Pre-built solutions can often be deployed in 2-4 weeks, while fully custom solutions may take 2-6 months from discovery to deployment.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    What integration capabilities do your solutions offer? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Our solutions can integrate with a wide variety of systems including CRMs, ERPs, databases, APIs, and legacy systems. We use standard protocols and can develop custom connectors when needed to ensure seamless integration with your existing technology stack.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    Do you provide training for our team? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Yes, we provide comprehensive training for both technical and non-technical staff. This includes administrator training for managing the AI systems, and end-user training for those who will interact with the AI agents regularly.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-shield-alt text-primary me-2"></i> Security & Compliance</h3>
+                        
+                        <ul class="help-faq-list">
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    How do you ensure data security? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>We implement multiple layers of security including encryption of data in transit and at rest, strict access controls, regular security audits, and compliance with industry-standard security protocols. We can also deploy solutions on-premises or in private clouds for additional security if required.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    Are your solutions compliant with regulations like GDPR? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>Yes, our solutions are designed with compliance in mind. We adhere to GDPR, HIPAA (for healthcare applications), and other relevant regulations based on your industry and location. We can also customize solutions to meet specific compliance requirements.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-life-ring text-primary me-2"></i> Support & Maintenance</h3>
+                        
+                        <ul class="help-faq-list">
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    What support options do you offer? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>We offer multiple support tiers including standard business hours support, 24/7 critical issue support, and dedicated account management. Our support includes troubleshooting, performance monitoring, and regular system health checks.</p>
+                                </div>
+                            </li>
+                            
+                            <li class="help-faq-item">
+                                <div class="help-faq-question" onclick="toggleAnswer(this)">
+                                    How do you handle updates and improvements? <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="help-faq-answer">
+                                    <p>We regularly release updates that include security patches, performance improvements, and new features. These updates are tested in staging environments before being deployed to production systems. For custom solutions, we coordinate updates with clients to minimize disruption.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-envelope text-primary me-2"></i> Contact Options</h3>
+                        <p>Can't find the answer you're looking for? Reach out to us through any of these channels:</p>
+                        
+                        <div class="help-contact-methods">
+                            <div class="help-contact-method">
+                                <i class="fas fa-envelope text-primary fa-3x me-2"></i>
+                                <h4 class="mt-2">Email Support</h4>
+                                <p>Send us an email and we'll respond within 24 hours</p>
+                                <a href="mailto:basha@aiproxybots.com" class="help-btn">Email Us</a>
+                            </div>
+                            
+                            <div class="help-contact-method">
+                                <i class="fas fa-phone text-primary fa-3x me-2"></i>
+                                <h4 class="mt-2">Phone Support</h4>
+                                <p>Call us during business hours for immediate assistance</p>
+                                <a href="tel:+918792158941" class="help-btn">Call Now</a>
+                            </div>
+                            
+                            <div class="help-contact-method">
+                                <i class="fas fa-comments text-primary fa-3x me-2"></i>
+                                <h4 class="mt-2">Live Chat</h4>
+                                <p>Chat with our support team in real-time during business hours</p>
+                                <a href="" class="help-btn">Start Chat</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
     <!-- Help End-->
     

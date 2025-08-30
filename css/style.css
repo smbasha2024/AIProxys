@@ -136,6 +136,11 @@ h6,
     margin-left: 8px;
 }
 
+.dropdown-divider {
+    border-top: 2px solid var(--medium-gray); 
+    margin: 0.5rem 0.5rem; 
+}
+
 @media (max-width: 991.98px) {
     .navbar .navbar-nav {
         padding: 0 15px;

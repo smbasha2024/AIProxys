@@ -28,15 +28,18 @@
                                 <a onclick="loadContent('team');" class="dropdown-item" id="nav-team">Our Team</a>
                                 <a onclick="loadContent('faq');" class="dropdown-item" id="nav-faq">FAQs</a>
                                 <a onclick="loadContent('testimonials');" class="dropdown-item" id="nav-testimonials">Testimonials</a>
-                                <!--
-                                <a href="404.html" class="dropdown-item">404 Page</a>
-                                -->
+                                <!-- Separator -->
+                                <div class="dropdown-divider"></div>
+
+                                <a onclick="loadContent('proddocs/policies');" class="dropdown-item" id="nav-policies">Polocies</a>
+                                <a onclick="loadContent('proddocs/cookies');" class="dropdown-item" id="nav-cookies">Cookies</a>
+                                <a onclick="loadContent('proddocs/help');" class="dropdown-item" id="nav-help">Help</a>
                             </div>
                         </div>
                         <button type="button" class="nav-item nav-link btn text-white p-0 d-none d-lg-block" data-bs-toggle="modal"
                         data-bs-target="#searchModal"><i class="fa fa-search"></i></button>
                         <a class="nav-item"></a>
-                        <a onclick="loadContentWithEditor('contact'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="btn btn-outline-light px-sm-4 rounded-pill animated slideInRight"><b>Contact</b></a>
+                        <a onclick="loadContentWithEditor('contact'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="btn btn-outline-light px-sm-4 rounded-pill animated slideInRight" id="nav-contact"><b>Contact</b></a>
                     </div>
                     
                 </div>
