@@ -86,6 +86,10 @@ window.QuillManager = (function() {
     function getEditor(containerId) {
         return editors.get(containerId) || createEditor(containerId);
     }
+
+    function hasEditor(containerId){
+        return editors.get(containerId)
+    }
     
     function clearEditor(containerId) {
         const editor = getEditor(containerId);
@@ -135,6 +139,7 @@ window.QuillManager = (function() {
         initialize,
         createEditor,
         getEditor,
+        hasEditor,
         clearEditor,
         getContent,
         destroyEditor,

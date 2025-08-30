@@ -64,20 +64,24 @@ onDOMReady(() => {
 });
 
 function initEditorIfNeeded(){
-  QuillManager.destroyEditor('contactEditor');
+  //console.log('Contact Editor', QuillManager.hasEditor('contactEditor'));
+  const ceditor = QuillManager.hasEditor('contactEditor');
+  if ((ceditor === undefined) || (ceditor === null)) {
+    QuillManager.destroyEditor('contactEditor');
 
-  if (document.readyState !== 'loading') {
-    if (document.getElementById('contactMsgForm')) {
-      const container = document.getElementById('contactEditor');
-      QuillManager.getEditor('contactEditor');
-      container.style.display = 'block';
-    }
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
+    if (document.readyState !== 'loading') {
       if (document.getElementById('contactMsgForm')) {
+        const container = document.getElementById('contactEditor');
         QuillManager.getEditor('contactEditor');
+        container.style.display = 'block';
       }
-    });
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (document.getElementById('contactMsgForm')) {
+          QuillManager.getEditor('contactEditor');
+        }
+      });
+    }
   }
 }
 
