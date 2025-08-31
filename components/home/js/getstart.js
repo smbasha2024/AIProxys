@@ -90,8 +90,8 @@ async function resultsToForm(strResult) {
 }
 
 async function submitMessage() {
+  const btnSubmit = document.getElementById('btnGetStart');
   try {
-    const btnSubmit = document.getElementById('btnGetStart');
 
     btnSubmit.classList.add('loading');
 

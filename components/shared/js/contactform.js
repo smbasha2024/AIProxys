@@ -20,7 +20,7 @@ const mandatoryFields = contactMsgForm.querySelectorAll('[required]');
 
 // Check form validity on input
 contactMsgForm.addEventListener('input', () => {
-  console.log('Form valid?', contactMsgForm.checkValidity());
+  //console.log('Form valid?', contactMsgForm.checkValidity());
   btnContact.disabled = !contactMsgForm.checkValidity();
 });
 
