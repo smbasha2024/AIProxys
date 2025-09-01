@@ -3,10 +3,10 @@
     <div class="container-fluid sticky-top">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark p-0">
-                <a href="../index.html" class="navbar-brand">
+                <a href="#home" data-page="home" id="brand-logo" class="navbar-brand">
                     <img src="../img/logo.jpg" width="55" alt="" />
                 </a>
-                <a href="../index.html" class="navbar-brand">
+                <a href="#home" data-page="home" id="brand-title" class="navbar-brand">
                     <h1 class="text-white" style = "line-height: 0.5;">AIProxys</h1>
                     <span style="font-size:1rem;"><i>Innovate. Customize. Transform with AI.</i></span>
                     
@@ -17,29 +17,29 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
-                        <a onclick="loadContent('home'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link active" id="nav-home">Home</a>
-                        <a onclick="loadContent('about'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-about">About</a>
-                        <a onclick="loadContent('products'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-products">Products</a>
-                        <a onclick="loadContent('services'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-item nav-link" id="nav-services">Services</a>
+                        <a href="#home" data-page="home" class="nav-item nav-link active" id="nav-home">Home</a>
+                        <a href="#about" data-page="about" class="nav-item nav-link" id="nav-about">About</a>
+                        <a href="#products" data-page="products" class="nav-item nav-link" id="nav-products">Products</a>
+                        <a href="#services" data-page="services" class="nav-item nav-link" id="nav-services">Services</a>
                         <div class="nav-item dropdown">
                             <a href="#" onclick="$('.nav-link').removeClass('active'); $(this).addClass('active');" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Blogs</a>
                             <div class="dropdown-menu bg-light mt-2">
-                                <a onclick="loadContent('casestudy');" class="dropdown-item" id="nav-casestudy">Case Studies</a>
-                                <a onclick="loadContent('team');" class="dropdown-item" id="nav-team">Our Team</a>
-                                <a onclick="loadContent('faq');" class="dropdown-item" id="nav-faq">FAQs</a>
-                                <a onclick="loadContent('testimonials');" class="dropdown-item" id="nav-testimonials">Testimonials</a>
+                                <a href="#casestudy" data-page="casestudy" class="dropdown-item" id="nav-casestudy">Case Studies</a>
+                                <a href="#team" data-page="team" class="dropdown-item" id="nav-team">Our Team</a>
+                                <a href="#faq" data-page="faq" class="dropdown-item" id="nav-faq">FAQs</a>
+                                <a href="#testimonials" data-page="testimonials" class="dropdown-item" id="nav-testimonials">Testimonials</a>
                                 <!-- Separator -->
                                 <div class="dropdown-divider"></div>
 
-                                <a onclick="loadContent('proddocs/policies');" class="dropdown-item" id="nav-policies">Polocies</a>
-                                <a onclick="loadContent('proddocs/cookies');" class="dropdown-item" id="nav-cookies">Cookies</a>
-                                <a onclick="loadContent('proddocs/help');" class="dropdown-item" id="nav-help">Help</a>
+                                <a href="#proddocs/policies" data-page="proddocs/policies" class="dropdown-item" id="nav-policies">Polocies</a>
+                                <a href="#proddocs/cookies" data-page="proddocs/cookies" class="dropdown-item" id="nav-cookies">Cookies</a>
+                                <a href="#proddocs/help" data-page="proddocs/help" class="dropdown-item" id="nav-help">Help</a>
                             </div>
                         </div>
                         <button type="button" class="nav-item nav-link btn text-white p-0 d-none d-lg-block" data-bs-toggle="modal"
                         data-bs-target="#searchModal"><i class="fa fa-search"></i></button>
                         <a class="nav-item"></a>
-                        <a onclick="loadContentWithEditor('contact'); $('.nav-link').removeClass('active'); $(this).addClass('active');" class="btn btn-outline-light px-sm-4 rounded-pill animated slideInRight" id="nav-contact"><b>Contact</b></a>
+                        <a href="#contact" data-page="contact" class="btn btn-outline-light px-sm-4 rounded-pill animated slideInRight" id="nav-contact"><b>Contact</b></a>
                     </div>
                     
                 </div>

@@ -149,10 +149,21 @@ function closeSearchModal() {
     document.body.style.overflow = '';
 
     // Remove modal backdrop if exists
+    /*
     const backdrop = document.querySelector('.modal-backdrop');
+    
     if (backdrop) {
-        backdrop.parentNode.removeChild(backdrop);
+        try {
+            backdrop.remove();
+        }
+        catch(e){
+            console.log('Error in removing backdrop', e);
+        }
+        finally{
+            console.log('Error in removing backdrop');
+        }
     }
+    */
     //modalInstance.hide();
 }
 

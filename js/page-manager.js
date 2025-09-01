@@ -23,11 +23,13 @@ window.PageManager = (function() {
         (eventHandlers[event] || []).forEach(handler => handler(data));
     }
 
+    /*
     function updateNavigation(activePage) {
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.toggle('active', link.getAttribute('data-page') === activePage);
         });
     }
+    */
 
     /*
     function getMainContent() {
@@ -72,13 +74,13 @@ window.PageManager = (function() {
 
             // Hide current page
             if (currentPage) {
-                const currentEl = document.getElementById(`${currentPage}-page`);
+                const currentEl = document.getElementById(`${currentPage}`);
                 if (currentEl) currentEl.classList.remove('active');
             }
 
             // Create new page if not in DOM
             //const mainContent = getMainContent();
-            let newPageElement = document.getElementById(`${pageId}-page`);
+            let newPageElement = document.getElementById(`${pageId}`);
             /*
             if (!newPageElement) {
                 newPageElement = createPageElement(pageId, pages[pageId].template);
@@ -87,10 +89,10 @@ window.PageManager = (function() {
             */
 
             // Show new page
-            newPageElement.classList.add('active');
+            //newPageElement.classList.add('active');
 
             // Update navigation & history
-            updateNavigation(pageId);
+            //updateNavigation(pageId);
             if (updateHistory) {
                 const url = new URL(window.location);
                 url.searchParams.set('page', pageId);
