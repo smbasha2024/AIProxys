@@ -61,6 +61,7 @@ function displayResults(results, query) {
     
     // Add results to the page
     results.forEach(page => {
+        //console.log(page);
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
         
@@ -74,14 +75,13 @@ function displayResults(results, query) {
        //<a href="${page.url}" class="result-url">${page.url}</a>
         resultItem.innerHTML = `
             <h2 class="result-title">${title}</h2>
-            <a onclick="loadContent('${page.url}');" class="result-url">${page.url}</a>
+            <a onclick="document.getElementById('${page.navItem}').click();" class="result-url">${page.url}</a>
             <p class="result-snippet">${snippet}</p>
         `;
         
         resultItem.querySelector('.result-url').addEventListener('click', (e) => {
             e.preventDefault();
             closeSearchModal();
-            //loadContent(page.url);
         });
         resultsContainer.appendChild(resultItem);
     });

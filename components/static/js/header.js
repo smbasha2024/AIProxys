@@ -34,11 +34,19 @@
         if (link) {
             e.preventDefault();
             const page = link.getAttribute("data-page");
+            const pageEditor = link.getAttribute("data-has-editor")
 
-              // Load page dynamically
-              await loadContent(page);
+            // Load page dynamically
+            if((pageEditor !== null)  && (pageEditor !== undefined) && (pageEditor === "true")) {
+                await loadContentWithEditor(page);
+            }
+            else {
+                await loadContent(page);
+            }
             // Scroll to top
-            moveToTop();
+            if(page !== "contact") {
+                moveToTop();
+            }
 
             // Update active state
             updateActiveState(link);
