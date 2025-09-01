@@ -68,7 +68,7 @@ async function loadComponentContent(path, containerId) {
       //const scriptResponse = await fetch(scriptPath);
       const script = await scriptResponse.text();
       const scriptElement = document.createElement('script');
-      scriptElement.textContent = script;
+      //scriptElement.textContent = script;
       scriptElement.src = scriptPath;
       scriptElement.defer = true;
       document.body.appendChild(scriptElement);

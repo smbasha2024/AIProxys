@@ -66,3 +66,15 @@
     max-width: 100%;
     margin: 20px 20px;
 }
+
+.api-hover-box {
+  /*background: rgba(255, 255, 255, 0.1);*/
+  background-color: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.api-hover-box:hover {
+  background: rgba(255, 255, 255, 0.2); /* slightly brighter */
+  transform: translateY(-5px) scale(1.03); /* lift & zoom effect */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* add depth */
+}
