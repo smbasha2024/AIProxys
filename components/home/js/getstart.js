@@ -1,39 +1,45 @@
 apiUrl = window.AppConfig.apiBaseUrl;
 apiEmailUrl = apiUrl + "emails";
 apiEmail = window.AppConfig.apiBaseEmail;
-//console.log("In getstart.js")
-//QuillManager.listAllEditors();
-
-//Form Validations..................
-const getStartForm = document.getElementById('getStartForm');
-const btnGetStart = document.getElementById('btnGetStart');
-//const getSartMandFields = getStartForm.querySelectorAll('[required]');
-
-// Check form validity on input
-getStartForm.addEventListener('input', () => {
-  //console.log('Form valid?', getStartForm.checkValidity());
-  btnGetStart.disabled = !getStartForm.checkValidity();
-});
-
-// Initial check
-btnGetStart.disabled = !getStartForm.checkValidity();
 
 /***************************************************************************/
 //        Quill, Rich Text Editor, settings and initialization
 /***************************************************************************/
-// Initialize editors when DOM is ready
-function onDOMReady(callback) {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', callback);
-  } else {
-    callback(); // DOM is already ready
-  }
-}
+function initGetStartFrom(){
+  // To set the Send Message button to diabled till all input fields are valid.
+  const frmGetStartForm = document.getElementById("getStartForm");
+  const btnGetStartSubmit = document.getElementById("btnGetStart");
+  const mandatoryFields = frmGetStartForm.querySelectorAll('[required]');
 
-onDOMReady(() => {
-  // Your Quill initialization or other code here
-  initModalEditorIfNeeded()
-});
+  // Check form validity on input
+  frmGetStartForm.addEventListener('input', () => {
+    console.log('Form valid?', frmGetStartForm.checkValidity());
+    btnGetStartSubmit.disabled = !frmGetStartForm.checkValidity();
+  });
+
+  // Initial check
+  btnGetStartSubmit.disabled = !frmGetStartForm.checkValidity();
+
+  // Optional: Add visual feedback
+  mandatoryFields.forEach(field => {
+    if (field.tagName !== 'DIV'){
+      field.addEventListener('input', () => {
+        field.classList.toggle('valid', field.checkValidity());
+      });
+    }
+  });
+
+  document.getElementById('getStartEmail').addEventListener('input', function() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(this.value)) {
+      this.classList.add('valid');
+    } else {
+      this.classList.remove('valid');
+    }
+  });
+
+  initModalEditorIfNeeded();
+}
 
 function initModalEditorIfNeeded(){
   QuillManager.destroyEditor('getStartEditor');
@@ -53,6 +59,65 @@ function initModalEditorIfNeeded(){
   }
 }
 
+// Initialize editors when DOM is ready
+function onDOMReady(callback) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback);
+  } else {
+    callback(); // DOM is already ready
+  }
+}
+
+onDOMReady(() => {
+  // Your Quill initialization or other code here
+  console.log('Basha');
+  initGetStartFrom();
+});
+
+
+function resetGetStartForm(){
+  const frmGetStartForm = document.getElementById("getStartForm");
+  const fsGetStartFieldSet = document.getElementById("getStartFieldset");
+  const btnGetStartSubmit = document.getElementById("btnGetStart");
+
+  // 1. Reset form values
+  frmGetStartForm.reset();
+
+  // 2. Remove ALL custom classes
+  const allInputs = frmGetStartForm.querySelectorAll('input, select, textarea, div[contenteditable]');
+  allInputs.forEach(input => {
+    input.classList.remove('valid', 'is-valid', 'is-invalid');
+
+    // Only real form controls support setCustomValidity
+    if (typeof input.setCustomValidity === "function") {
+      input.setCustomValidity("");
+    }
+  });
+
+  // 3. Reset Quill editor (clear text area)
+  if (typeof clearModalEditor === "function") {
+    clearModalEditor();
+  }
+
+  // 4. Reset Bootstrap validation helpers
+  frmGetStartForm.classList.remove("was-validated");
+  fsGetStartFieldSet.classList.remove("was-validated");
+  fsGetStartFieldSet.disabled = false;
+
+  // 5. Reset result text
+  const resultEl = document.getElementById("getStartResult");
+  if (resultEl) resultEl.textContent = "";
+
+  // 6. Disable submit button (force invalid state)
+  btnGetStartSubmit.disabled = true;
+
+  // 7. Force browser to re-evaluate validity after DOM reset
+  requestAnimationFrame(() => {
+    btnGetStartSubmit.disabled = !frmGetStartForm.checkValidity();
+    console.log("Form validity after reset:", frmGetStartForm.checkValidity());
+  });
+}
+
 function getModalEditorContent() {
     const content = QuillManager.getContent('getStartEditor');
     return content;
@@ -63,6 +128,7 @@ function clearModalEditor() {
 
 async function closeGetStartModal() {
     //console.log("In closeModal")
+    resetGetStartForm();
     QuillManager.destroyEditor('getStartEditor');
     const modalElem = document.getElementById('getStartModal');
   
@@ -75,7 +141,10 @@ async function closeGetStartModal() {
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
 
-    document.getElementById("getStartFieldset").disabled = false;
+    //document.getElementById("getStartFieldset").disabled = false;
+    // Clear the result message
+    document.getElementById("getStartResult").textContent = "";
+    
 }
 
 
@@ -105,10 +174,6 @@ async function submitMessage() {
 
     //console.log('API call Result: ', apiResult);
     if (apiResult.status !== 200) throw new Error('Request failed');
-    //showSuccessMessage();
-    
-    //const quoteResp = await getMessages();
-    //await resultsToForm(quoteResp);
 
     console.log('Message Submitted!');
 
