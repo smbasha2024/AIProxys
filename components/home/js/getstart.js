@@ -151,14 +151,24 @@ async function closeGetStartModal() {
 /************************************* Form Event Handlers Calls ***************************/
 //        All Form Event Handlers are here
 /***************************************************************************/
-async function resultsToForm(strResult) {
-  const result = document.getElementById("getStartResult");
-  result.innerHTML = "Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
+async function resultsToStartForm(strResult, bSuccess) {
+  const lblResult = document.getElementById("getStartResult");
+
+  lblResult.style.paddingLeft = "15px";
+  lblResult.style.fontSize = "1.2rem"
   
-  document.getElementById("getStartFieldset").disabled = true;
+  if(bSuccess) {
+    lblResult.style.color = "Green";
+    lblResult.innerHTML = "✅   Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
+    document.getElementById("getStartFieldset").disabled = true;
+  }
+  else {
+    lblResult.style.color = "red";
+    lblResult.innerHTML = "❌   Server is down. Please try again later."
+  }
 }
 
-async function submitMessage() {
+async function submitMessageGetStart() {
   const btnSubmit = document.getElementById('btnGetStart');
   try {
 
@@ -169,11 +179,11 @@ async function submitMessage() {
     document.body.style.cursor = 'wait';
 
     //console.log("calling sendEmail...")
-    const apiResult = await sendEmail();
-    await resultsToForm("");
+    const apiResult = await sendEmailGetStart();
 
     //console.log('API call Result: ', apiResult);
     if (apiResult.status !== 200) throw new Error('Request failed');
+    await resultsToStartForm("", true);
 
     //console.log('Message Submitted!');
 
@@ -191,7 +201,7 @@ async function submitMessage() {
 /************************************* API Calls ***************************/
 //        All API calls are here
 /***************************************************************************/
-async function sendEmail(){
+async function sendEmailGetStart(){
   const txtCustName = document.getElementById('getStartName');
   const txtCustEmail = document.getElementById('getStartEmail');
   const txtCustPhone = document.getElementById('getStartPhoneNo');
@@ -241,6 +251,7 @@ async function sendEmail(){
       //console.log('Success:', responseData);
       return {'status': 200, message: responseData}
     } catch (error) {
+      await resultsToStartForm("", false);
       console.error('Error:', error);
     }
 }

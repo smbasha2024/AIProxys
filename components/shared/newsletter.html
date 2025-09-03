@@ -8,15 +8,26 @@
                 </div>
                 <div class="col-md-7 py-5 newsletter-text wow fadeIn" data-wow-delay="0.5s">
                     <div class="btn btn-sm border rounded-pill text-white px-3 mb-3" style="cursor: default;">Newsletter</div>
-                    <h1 class="text-white mb-4">Let's subscribe the newsletter</h1>
-                    <div class="position-relative w-100 mt-3 mb-2">
-                        <input id="subscriberEmail" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text"
-                            placeholder="Enter Your Email" style="height: 48px;">
-                        <button id="emailSubscribe" type="button" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2" onclick="sendEmail();"><i
-                                class="fa fa-paper-plane text-primary fs-4"></i></button>
-                        <!-- <small class="text-white-50">Please enter your e-mail and send</small> -->
-                        <label id="result" style="font-size:smaller; color: rgb(13, 171, 66); border-color:rgb(5, 151, 51); border-style:inset;"></label>
-                    </div>
+                    <h1 class="text-white text-nowrap">Let's subscribe the newsletter</h1>
+                    <form id = "newsletterForm">
+                        <fieldset id="newsletterFieldset">
+                            <div class="position-relative w-100 mt-3 mb-2">
+                                <div class="col-md-12">
+                                    <div class="form-floating">
+                                        <input id="subscriberEmail" type="email" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" 
+                                            required maxlength="200" placeholder="Your Email" style="height: 48px;">
+                                        <label for="subscriberEmail">Your Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button id="emailSubscribe" type="submit" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2" disabled onclick="subscribeToNewsletter();"><i
+                                            class="fa fa-paper-plane text-primary fs-4"></i></button>
+                                    <!-- <small class="text-white-50">Please enter your e-mail and send</small> -->
+                                    <label id="result" style="font-size:smaller; color: rgb(13, 171, 66); border-color:rgb(5, 151, 51); border-style:inset;"></label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
                     
                 </div>
             </div>

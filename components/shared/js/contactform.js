@@ -104,10 +104,21 @@ function clearEditor() {
 //        All Form Event Handlers are here
 /*******************************************************************************************/
 
-async function resultsToForm(strResult) {
-  const result = document.getElementById("result");
-  result.innerHTML = "Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
-  document.getElementById("contactFieldset").disabled = true;
+async function resultsToContactForm(strResult, bSuccess) {
+  const lblResult = document.getElementById("result");
+
+  lblResult.style.paddingLeft = "15px";
+  lblResult.style.fontSize = "1.2rem"
+
+  if(bSuccess) {
+    lblResult.style.color = "green";
+    lblResult.innerHTML = "✅   Thank You! We have received your message! We'll be in touch with you shortly."; // + "<br/><b>PS:</b>" + strResult;
+    document.getElementById("contactFieldset").disabled = true;
+  }
+  else {
+    lblResult.style.color = "red";
+    lblResult.innerHTML = "❌   Server is down. Please try again later."
+  }
 }
 
 function resetContactForm(){
@@ -122,7 +133,7 @@ function resetContactForm(){
   fsConFieldSet.disabled = false;
 }
 
-async function sendMessage() {
+async function sendMessageContact() {
   const btnContact = document.getElementById('btnSendContact');
   try {
     btnContact.classList.add('loading');
@@ -132,16 +143,11 @@ async function sendMessage() {
     document.body.style.cursor = 'wait';
 
     //console.log("calling sendEmail...")
-    const apiResult = await sendEmail();
-    await resultsToForm("");
+    const apiResult = await sendEmailContact();
 
     //console.log('API call Result: ', apiResult);
     if (apiResult.status !== 200) throw new Error('Request failed');
-    //showSuccessMessage();
-    
-    //const quoteResp = await getMessages();
-    //await resultsToForm(quoteResp);
-
+    await resultsToContactForm("", true);
     //console.log('Message Sent!');
 
   } catch (error) {
@@ -158,7 +164,7 @@ async function sendMessage() {
 /************************************* API Calls ***************************/
 //        All API calls are here
 /***************************************************************************/
-async function sendEmail(){
+async function sendEmailContact(){
     const txtCustomerEmail = document.getElementById('email');
     const txtCustomerName = document.getElementById('name');
     const txtEmailSubject = document.getElementById('subject');
@@ -201,6 +207,7 @@ async function sendEmail(){
       //console.log('Success:', responseData);
       return {'status': 200, message: responseData}
     } catch (error) {
+      await resultsToContactForm("", false);
       console.error('Error:', error);
     }
 }

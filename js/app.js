@@ -26,8 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
     PageManager.on('page:afterLoad', function(data) {
         //console.log("Page Manager: AL");
         if (data.page === "contact") {
-            initContactForm();
+            if (typeof initContactForm === "function") initContactForm();
         }
+
+        //Newsletter page is embedded in all pages - Home, About, Products, Services, Casestudy, Testimonials, Team, Faq, Cookies, Policy, Help
+        initNewsletterPage();
+        
     });
 
     PageManager.on('page:focus', function(data) {
