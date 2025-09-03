@@ -5,7 +5,7 @@ window.ModalController = (function() {
     const loadedModals = new Map();
     const modalScripts = new Map();
 
-    async function loadModalResources(modalId) {
+    async function loadModalResources(modalId, page, pageEditor) {
         // Trigger before load event
         ModalManager.triggerModalEvent('modal:beforeLoad', { 
             modalId, 
@@ -14,42 +14,35 @@ window.ModalController = (function() {
         });
 
         try {
-            // Load modal HTML
-            const htmlResponse = await fetch(`/modals/${modalId}.html`);
-            if (!htmlResponse.ok) throw new Error('Failed to load modal HTML');
-            const html = await htmlResponse.text();
-
-            // Load modal JavaScript
-            const scriptResponse = await fetch(`/js/modals/${modalId}.js`);
-            if (!scriptResponse.ok) throw new Error('Failed to load modal script');
-            const scriptText = await scriptResponse.text();
-
-            // Create and execute script
-            const script = document.createElement('script');
-            script.textContent = scriptText;
-            document.head.appendChild(script);
+            // Load page dynamically
+            if ((pageEditor !== null) && (pageEditor !== undefined) && (pageEditor === "true")) {
+                await loadModalContentWithEditor(page, modalId);
+            } else {
+                await loadModalContent(page, modalId);
+            }
 
             // Store reference
-            modalScripts.set(modalId, script);
-
-            // Insert HTML into modal container
-            document.getElementById('modal-content-container').innerHTML = html;
+            modalScripts.set(modalId, page);
 
             // Initialize Bootstrap modal
             const modalElement = document.getElementById(modalId);
             if (modalElement) {
                 const modal = new bootstrap.Modal(modalElement);
                 loadedModals.set(modalId, modal);
-
+                //console.log("In Controller. BL..... ", "HTML Map Set");
                 // Add Bootstrap event listeners
                 modalElement.addEventListener('shown.bs.modal', () => {
-                    ModalManager.triggerModalEvent('modal:shown', { modalId });
-                    ModalManager.triggerModalEvent('modal:focus', { modalId });
+                    ModalManager.triggerModalEvent('modal:shown', { modalId, action: 'load', success: true, timestamp: Date.now()});
+                    ModalManager.triggerModalEvent('modal:focus', { modalId, action: 'load', success: true, timestamp: Date.now()});
                 });
 
                 modalElement.addEventListener('hidden.bs.modal', () => {
-                    ModalManager.triggerModalEvent('modal:hidden', { modalId });
+                    ModalManager.triggerModalEvent('modal:hidden', { modalId, action: 'unload', success: true, timestamp: Date.now() });
                 });
+                if(modal){
+                    modal.show();
+                    //ModalManager.triggerModalEvent('modal:focus', { modalId,  action: 'unload', success: true, timestamp: Date.now()}); 
+                }
             }
 
             // Trigger after load event
@@ -63,6 +56,7 @@ window.ModalController = (function() {
             return true;
 
         } catch (error) {
+            console.log("Triggered AfterLoad event with error.", error);
             ModalManager.triggerModalEvent('modal:afterLoad', { 
                 modalId, 
                 action: 'load',
@@ -91,24 +85,26 @@ window.ModalController = (function() {
 
             // Remove modal script
             const script = modalScripts.get(modalId);
-            if (script && script.parentNode) {
-                script.parentNode.removeChild(script);
+            if (script) {
+                await unloadModalContentScript(script);
             }
 
             // Cleanup Bootstrap modal
-            const modal = loadedModals.get(modalId);
+            //const modal = loadedModals.get(modalId);
+            //console.log('Modal Name', modal)
+            const modal = document.getElementById(modalId);
             if (modal) {
-                modal.hide();
-                modal.dispose();
+                if(typeof modal.hide === "function") modal.hide();
+                if(typeof modal.dispose === "function") modal.dispose();
             }
-
+            
             // Remove from maps
             loadedModals.delete(modalId);
             modalScripts.delete(modalId);
 
             // Cleanup global functions
-            cleanupModalGlobals(modalId);
-
+            //cleanupModalGlobals(modalId);
+            
             // Trigger after unload event
             ModalManager.triggerModalEvent('modal:afterUnload', { 
                 modalId, 
@@ -120,6 +116,7 @@ window.ModalController = (function() {
             return true;
 
         } catch (error) {
+            console.log("Unload Resource - After Unload event tirggering error.", error);
             ModalManager.triggerModalEvent('modal:afterUnload', { 
                 modalId, 
                 action: 'unload',
@@ -134,9 +131,7 @@ window.ModalController = (function() {
     function cleanupModalGlobals(modalId) {
         // Define global functions to clean up for each modal
         const modalGlobals = {
-            'getStartModal': ['initGetStartFrom', 'resetGetStartForm', 'submitMessage'],
-            'contactModal': ['initContactForm', 'validateContactForm'],
-            'loginModal': ['initLoginForm', 'handleLogin']
+            'getStartModal': ['initGetStartFrom', 'initModalEditorIfNeeded', 'resetGetStartForm', 'submitMessage', 'closeGetStartModal']
         };
 
         const globalsToRemove = modalGlobals[modalId] || [];
@@ -154,8 +149,20 @@ window.ModalController = (function() {
 
     return {
         async openModal(modalId, data = {}) {
+            // data should have data.scriptPath and data.hasEditor
+            let scriptPath = null;
+            let hasEditor = null;
+
+            const isDataEmpty = Object.keys(data).length === 0;
+            if(!isDataEmpty) {
+                const hasScriptPath = "scriptPath" in data;
+                const hasEditorData = "hasEditor" in data;
+                if (hasScriptPath) scriptPath = data.scriptPath;
+                if (hasEditorData) hasEditor = data.hasEditor;
+            }
+
             try {
-                const success = await loadModalResources(modalId);
+                const success = await loadModalResources(modalId, scriptPath, hasEditor);
                 if (success) {
                     const modal = loadedModals.get(modalId);
                     if (modal) {

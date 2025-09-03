@@ -20,7 +20,7 @@ window.ModalManager = (function() {
     function logEvent(event, data) {
         const now = new Date();
         const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
-        console.log('ModalManager Event:', {logTime: timeString, logEvent: event, logData: JSON.stringify(data)});
+        //console.log('ModalManager Event:', {logTime: timeString, logEvent: event, logData: JSON.stringify(data)});
     }
 
     return {

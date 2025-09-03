@@ -48,27 +48,27 @@ async function loadModalComponentContent(path, containerId, modalName) {
 async function loadModalContent(page, modalName) {
     //console.log('loadModalContent method');
     await loadModalComponentContent(page, 'modal-content-container', modalName);
-    await openModal(modalName);
+    //await openModal(modalName);
   //console.log('page - ', page);
   
   window.history.pushState({ page }, '', `#${page}`);
 }
 
-function initModalEditorIfNeeded(){
+//function initModalEditorIfNeeded(){
   //console.log("Editor initialization.. call...")
-}
+//}
 
 async function loadModalContentWithEditor(page, modalName) {
   //console.log('loadModalContent method');
   await loadModalComponentContent(page, 'modal-content-container', modalName);
-  await openModal(modalName);
+  //await openModal_old(modalName);
   //console.log('page - ', page);
   
-  initModalEditorIfNeeded();
+  //initModalEditorIfNeeded();
   window.history.pushState({ page }, '', `#${page}`);
 }
 
-async function openModal(modalName) {
+async function openModal_old(modalName) {
     // Get the modal element
     const modalElem = document.getElementById(modalName);
     
@@ -79,7 +79,7 @@ async function openModal(modalName) {
     modal.show();
 }
 
-async function closeModal(modalName) {
+async function closeModal_old(modalName) {
     //console.log("In closeModal")
     const modalElem = document.getElementById(modalName);
     //const modalInstance = bootstrap.Modal.getInstance(modalElem);
@@ -93,17 +93,21 @@ async function closeModal(modalName) {
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
 
-    /*
-    // Remove modal backdrop if exists
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop && backdrop.parentNode) {
-      console.log('Removing backdrop', backdrop);
-      backdrop.parentNode.removeChild(backdrop);
-    } else if (backdrop && !backdrop.parentNode) {
-        console.log('Backdrop exists but is not in DOM');
-      } else {
-          console.log('No backdrop found');
-        }
-  */
-    //modalInstance.hide();
+}
+
+async function unloadModalContentScript(scriptPath) {
+    let scriptFilePath = scriptPath;
+    if(scriptFilePath.includes('/')) {
+      scriptFilePath = 'components/' + scriptFilePath.replace('/','/js/') + '.js';
+    }
+    else
+    {
+      scriptFilePath = 'components/js/' + scriptFilePath + '.js';
+    }
+    
+    const scriptElement = document.querySelector(`script[src="${scriptFilePath}"]`);
+    if (scriptElement) {
+      scriptElement.remove();
+      //console.log(`Script ${scriptFilePath} removed from DOM`);
+    }
 }

@@ -13,7 +13,7 @@ function initGetStartFrom(){
 
   // Check form validity on input
   frmGetStartForm.addEventListener('input', () => {
-    console.log('Form valid?', frmGetStartForm.checkValidity());
+    //console.log('Form valid?', frmGetStartForm.checkValidity());
     btnGetStartSubmit.disabled = !frmGetStartForm.checkValidity();
   });
 
@@ -70,7 +70,7 @@ function onDOMReady(callback) {
 
 onDOMReady(() => {
   // Your Quill initialization or other code here
-  console.log('Basha');
+  //console.log('onDOMReady...');
   initGetStartFrom();
 });
 
@@ -114,7 +114,7 @@ function resetGetStartForm(){
   // 7. Force browser to re-evaluate validity after DOM reset
   requestAnimationFrame(() => {
     btnGetStartSubmit.disabled = !frmGetStartForm.checkValidity();
-    console.log("Form validity after reset:", frmGetStartForm.checkValidity());
+    //console.log("Form validity after reset:", frmGetStartForm.checkValidity());
   });
 }
 
@@ -175,7 +175,7 @@ async function submitMessage() {
     //console.log('API call Result: ', apiResult);
     if (apiResult.status !== 200) throw new Error('Request failed');
 
-    console.log('Message Submitted!');
+    //console.log('Message Submitted!');
 
   } catch (error) {
     console.log('Error :', error);
