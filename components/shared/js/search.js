@@ -63,7 +63,7 @@ function displayResults(results, query) {
     results.forEach(page => {
         //console.log(page);
         const resultItem = document.createElement('div');
-        resultItem.className = 'result-item';
+        resultItem.className = 'result-item key-card';
         
         // Create title with highlighted text
         const title = highlightText(page.title, query);
@@ -92,7 +92,7 @@ function displayNoResults() {
     const resultsContainer = document.getElementById('results-container');
     const resultsCount = document.getElementById('results-count');
     //console.log("In No Results")
-    resultsCount.textContent = '0 results found';
+    resultsCount.textContent = '0 result(s) found';
     resultsContainer.innerHTML = `
         <div class="no-results">
             <h3>No results found</h3>
@@ -133,38 +133,8 @@ function createSnippet(content, query) {
 
 function closeSearchModal() {
     const modalElement = document.getElementById('searchModal');
-    //const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    //modalInstance.hide();
-
-    //const modalElem = document.getElementById(modalName);
-    //const modalInstance = bootstrap.Modal.getInstance(modalElem);
-
-    document.activeElement.blur();  
-    modalElement.classList.remove('show');
-    modalElement.style.display = 'none';
-    modalElement.setAttribute('aria-hidden', 'true');
-
-    // Remove Bootstrap modal classes if present
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = '';
-
-    // Remove modal backdrop if exists
-    /*
-    const backdrop = document.querySelector('.modal-backdrop');
-    
-    if (backdrop) {
-        try {
-            backdrop.remove();
-        }
-        catch(e){
-            console.log('Error in removing backdrop', e);
-        }
-        finally{
-            console.log('Error in removing backdrop');
-        }
-    }
-    */
-    //modalInstance.hide();
+    const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    modalInstance.hide();
 }
 
 // Initialize with a sample search

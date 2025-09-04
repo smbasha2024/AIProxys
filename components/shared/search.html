@@ -2,33 +2,33 @@
     <!-- Full Screen Search Start -->
     <div class="modal fade" id="searchModal" tabindex="-1">
         <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content" style="background: rgba(20, 24, 62, 0.7);">
+            <div class="modal-content" style="background: rgba(221, 222, 236, 0.9);">
                 
-                <div class="modal-body d-flex flex-column align-items-center justify-content-center" style="overflow-y: auto;">
-                    <div class="search-container p-3" style="border: 2px solid white; border-radius: 10px; max-width: 650px; width: 100%; background: rgba(255, 255, 255, 0.2);">
+                <div class="modal-body d-flex flex-column align-items-center justify-content-center" style="overflow-y: hidden;">
+                    <div class="search-container p-3" style="border: 1px solid lightgray; border-radius: 10px; max-width: 650px; width: 100%; background: rgba(255, 255, 255, 0.2); display: flex; flex-direction: column; height: 94vh; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);">
                         <!-- Title and Close Button Row -->
-                        <div class="d-flex align-items-center mb-3" style="max-width: 600px; width: 100%; position: sticky; top: 0; background: rgba(20,24,62,0.1); z-index: 10; padding: 0.5rem 1rem; border-radius: 5px;">
+                        <div class="d-flex align-items-center mb-3" style="max-width: 600px; width: 100%; top: 0; background: rgba(20,24,62,0.1); z-index: 10; padding: 0.5rem 1rem; border-radius: 5px;">
                             
                             <!-- Title -->
-                            <h5 class="text-white text-center flex-grow-1 m-0">Quick Search</h5>
+                            <h5 class="text-black text-center flex-grow-1 m-0">Quick Search</h5>
                             
                             <!-- Close Button -->
                             <button type="button" class="btn btn-close bg-white ms-2" data-bs-dismiss="modal" aria-label="Close"
                                     style="width: 2.5rem; height: 2.5rem; font-size: 1rem;" onclick="closeSearchModal();"></button>
                         </div>
-                        <div class="input-group mb-3" style="max-width: 600px; width: 100%; position: sticky; top: 0; background: rgba(20,24,62,0.9); z-index: 10; border-radius: 10px;" id = "search-section">
-                            <input type="text" class="form-control bg-transparent border-light p-3"
-                                placeholder="Type search keyword & hit enter." style="color: white;" id = "searchInput" onkeypress="if(event.key === 'Enter'){ searchPages(event); }">
+                        <div class="input-group mb-3" style="max-width: 600px; width: 100%; top: 0; background: rgba(20,24,62,0.9); z-index: 10; border-radius: 10px;" id = "search-section">
+                            <input type="text" class="form-control  border-light p-3"
+                                placeholder="Type search keyword & hit enter." style="color: darkblue;" id = "searchInput" onkeypress="if(event.key === 'Enter'){ searchPages(event); }">
                             <button class="btn btn-light px-4" id = "searchButton" onclick="searchPages()"><i class="bi bi-search"></i></button>
                         </div>
-                        <div class="results-section mt-3" style="max-width: 600px; width: 100%;" id="results-section">
+                        <div class="results-section flex-grow-1" style="max-width: 600px; width: 100%; " id="results-section">
                             <div class="results-header">
-                                <div class="text-white" id="results-count">0 results found</div>
+                                <div class="text-black" id="results-count">0 result(s) found</div>
                             </div>
                             
-                            <div class="results-list" id="results-container"  style="overflow-y:auto; max-height:70vh;">
-                                <div class="text-white">
-                                    <h3 class="text-white">No search results yet</h3>
+                            <div class="results-list" id="results-container"  style="overflow-y:auto; max-height:60vh;">
+                                <div class="text-black">
+                                    <h3 class="text-black">No search results yet</h3>
                                     <p>Enter keywords in the search box above to find relevant pages.</p>
                                 </div>
                             </div>
