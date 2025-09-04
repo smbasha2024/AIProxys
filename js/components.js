@@ -149,6 +149,14 @@ async function loadMenuTitle(page){
   var navPath = page;
   navPath = navPath.charAt(0).toUpperCase() + navPath.slice(1);
   //console.log(navPath)
+  
+  if (navPath === "Faq") navPath = "Blogs / FAQ";
+  if (navPath === "Casestudy") navPath = "Blogs / Case Studies";
+  if (navPath === "Team") navPath = "Blogs / Our Team";
+  if (navPath === "Testimonials") navPath = "Blogs / Testimonials";
+  if (navPath === "Proddocs/policies") navPath = "Blogs / Policies";
+  if (navPath === "Proddocs/cookies") navPath = "Blogs / Cookies";
+  if (navPath === "Proddocs/help") navPath = "Blogs / Help";
 
   if(document.getElementById("navItemHeader") !== null) document.getElementById("navItemHeader").innerHTML = navPath;
   if(document.getElementById("navItemChild") !== null) document.getElementById("navItemChild").innerHTML = navPath;
