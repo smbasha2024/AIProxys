@@ -2,7 +2,7 @@
     <!-- Navbar Start -->
     <div class="container-fluid sticky-top">
         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-dark p-0">
+            <nav class="navbar navbar-expand-lg navbar-dark p-0 bg-primary shadow-sm">
                 <a href="#home" data-page="home" id="brand-logo" class="navbar-brand">
                     <img src="../img/logo.jpg" width="55" alt="" />
                 </a>
@@ -11,6 +11,18 @@
                     <span style="font-size:1rem;"><i>Innovate. Customize. Transform with AI.</i></span>
                     
                 </a>
+
+                <!-- Always visible (mobile only) -->
+                <div class="d-flex align-items-center ms-auto d-block d-lg-none">
+                    <button type="button" class="btn nav-link text-white p-0 me-2" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <a href="#contact" data-page="contact" data-has-editor="true" class="btn text-white">
+                        <i class="fa fa-phone"></i>
+                    </a>
+                </div>
+
+                <!-- Always visible (Desktop & Above only) -->
                 <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
                     data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
@@ -26,7 +38,7 @@
                             <div class="dropdown-menu bg-light mt-2">
                                 <a href="#casestudy" data-page="casestudy" class="dropdown-item" id="nav-casestudy">Case Studies</a>
                                 <a href="#team" data-page="team" class="dropdown-item" id="nav-team">Our Team</a>
-                                <a href="#faq" data-page="faq" class="dropdown-item" id="nav-faq">FAQs</a>
+                                <a href="#faq" data-page="faq" class="dropdown-item" id="nav-faq">FAQ</a>
                                 <a href="#testimonials" data-page="testimonials" class="dropdown-item" id="nav-testimonials">Testimonials</a>
                                 <!-- Separator -->
                                 <div class="dropdown-divider"></div>
@@ -39,9 +51,8 @@
                         <button type="button" class="nav-item nav-link btn text-white p-0 d-none d-lg-block" data-bs-toggle="modal"
                         data-bs-target="#searchModal"><i class="fa fa-search"></i></button>
                         <a class="nav-item"></a>
-                        <a href="#contact" data-page="contact" data-has-editor="true" class="btn btn-outline-light px-sm-4 rounded-pill animated slideInRight" id="nav-contact"><b>Contact</b></a>
+                        <a href="#contact" data-page="contact" data-has-editor="true" class="btn btn-outline-light d-none d-lg-block px-sm-4 rounded-pill animated slideInRight" id="nav-contact"><b>Contact</b></a>
                     </div>
-                    
                 </div>
             </nav>
         </div>

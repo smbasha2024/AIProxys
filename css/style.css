@@ -47,6 +47,16 @@
     z-index: 99;
 }
 
+/* Adjust position for mobile */
+@media (max-width: 767px) {
+  .back-to-top {
+    position: fixed;
+    display: none;
+    right: 65px;
+    bottom: 45px;
+    z-index: 99;  /* raise slightly if footer overlaps */
+  }
+}
 
 /*** Heading ***/
 h1,
@@ -94,13 +104,6 @@ h6,
     justify-content: center;
     font-weight: normal;
     border-radius: 50px;
-}
-
-
-/*** Navbar ***/
-.sticky-top {
-    top: -150px;
-    transition: .5s;
 }
 
 .navbar {
@@ -172,6 +175,98 @@ h6,
     }
 }
 
+
+
+/* Sticky Header */
+
+/*** Navbar ***/
+.sticky-top {
+    top: -150px;
+    transition: .5s;
+}
+@media (max-width: 992px) {
+    .sticky-top {
+        top: -10px;
+        transition: .5s;
+    }
+}
+
+.header .container-fluid.sticky-top {
+  position: sticky !important; /* bootstrap already does this, but explicit is OK */
+  box-shadow: 0 2px 10px var(--primary-blue);
+}
+
+/* ensure brand title doesn't wrap too tall on narrow viewports */
+@media (max-width: 992px) {
+  .header .navbar-brand span { display: none; } /* hide tagline to save vertical space on tiny screens */
+  
+  .header .container-fluid.sticky-top {
+    position: sticky !important;
+    box-shadow: 0 2px 10px var(--primary-blue);
+    display: block;
+    visibility: visible;
+  }
+  
+}
+
+
+/*********** Get Start ************/
+.get-start {
+    max-width: 100%; 
+    width: 100%; 
+    position: sticky; 
+    top: 0; 
+    background: rgba(20,24,62,0.1); 
+    z-index: 5; 
+    padding: 0.25rem 0.25rem; 
+    border-radius: 5px;
+}
+
+@media (max-width: 992px) {
+    .get-start {
+        max-width: 100%; 
+        width: 100%; 
+        top: 0; 
+        position:relative;
+        background: rgba(20,24,62,0.1); 
+        border-radius: 5px;
+        margin-top: 0.5rem;
+    }
+}
+
+.getstart-editor{
+    height: 12rem; 
+    overflow-y: auto;
+}
+
+@media (max-width: 992px) {
+    .getstart-editor{
+        height: 7rem; 
+        top: 0;
+        overflow-y: auto;
+    }
+}
+
+.getstart-container {
+    border: 2px solid lightgray; 
+    border-radius: 10px; 
+    max-width: 100%; 
+    width: 100%; 
+    background: rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 992px) {
+    .getstart-container {
+        border: 2px solid lightgray; 
+        border-radius: 10px; 
+        max-width: 100%; 
+        width: 100%; 
+        background: rgba(255, 255, 255, 0.2); 
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        overflow-y: auto;
+    }
+}
 
 /*** Hero Header ***/
 .hero-header {

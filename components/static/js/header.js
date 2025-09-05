@@ -149,6 +149,13 @@
                 e.preventDefault();
                 navigateTo('home');
             }
+            // To close navbar on mobile after click
+            const navbarCollapse = document.getElementById('navbarCollapse');
+            const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+            if (bsCollapse) {
+                bsCollapse.hide();
+            }
+            // To Close any open dropdowns
         }
     });
 
