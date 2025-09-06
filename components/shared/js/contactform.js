@@ -1,6 +1,7 @@
 apiUrl = window.AppConfig.apiBaseUrl;
 apiEmailUrl = apiUrl + "emails";
 apiEmail = window.AppConfig.apiBaseEmail;
+apiKeyEmail = window.AppConfig.apiKeyEmail;
 
 /***************************************************************************/
 //        Quill, Rich Text Editor, settings and initialization
@@ -193,6 +194,7 @@ async function sendEmailContact(){
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json', // Specify JSON data
+          'X-API-KEY': apiKeyEmail,
           // 'Authorization': 'Bearer YOUR_TOKEN' // Add auth headers if needed
         },
         body: JSON.stringify(payload) // Convert data to JSON string

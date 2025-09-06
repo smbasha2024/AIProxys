@@ -1,6 +1,7 @@
 apiUrl = window.AppConfig.apiBaseUrl;
 apiEmailUrl = apiUrl + "emails";
 apiEmail = window.AppConfig.apiBaseEmail;
+apiKeyEmail = window.AppConfig.apiKeyEmail;
 
 //console.log("Basha:", apiUrl, apiEmailUrl, apiEmail, window.AppConfig.searchData)
 function initNewsletterPage(){
@@ -140,6 +141,7 @@ async function sendEmailNews(){
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json', // Specify JSON data
+          'X-API-KEY': apiKeyEmail,
           // 'Authorization': 'Bearer YOUR_TOKEN' // Add auth headers if needed
         },
         body: JSON.stringify(payload) // Convert data to JSON string

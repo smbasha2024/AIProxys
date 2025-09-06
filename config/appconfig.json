@@ -1,6 +1,7 @@
 {
     "apiBaseUrl": "http://127.0.0.1:8000/",
     "apiBaseEmail": "smbasha2024@gmail.com",
+    "apiKeyEmail": "QUlQcm94eXNTZXJ2ZXJfRW1haWxfQVBJX0tleTpBbGxhaDc4NiM=",
     "theme": "dark",
     "maxItems": 20
 }
