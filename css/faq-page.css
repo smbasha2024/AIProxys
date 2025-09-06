@@ -41,6 +41,18 @@
     padding-top: 15px;
     padding-bottom: 15px;
 }
+@media (max-width: 992px) {
+    .faq-categories {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+        background-color: var(--light-gray);
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
 
 .faq-category-btn {
     background: var(--light-gray);
@@ -51,6 +63,17 @@
     font-weight: 600;
     transition: all 0.3s ease;
 }
+@media (max-width: 992px) {
+    .faq-category-btn {
+        background: var(--light-gray);
+        border: none;
+        padding: 3px 7px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 400;
+        transition: all 0.3s ease;
+    }
+}
 
 .faq-category-btn:hover, .faq-category-btn.active {
     background: var(--primary-blue);
@@ -58,24 +81,48 @@
 }
 
 .faq-containers {
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 992px) {
+    .faq-containers {
+    margin-bottom: 1rem;
+}
 }
 
 .faq-container {
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-left: 10rem;
+    padding-right: 10rem;
     
     padding-bottom: 15px;
     background-color: var(--light-blue);
     box-shadow: 0 5px 5px rgba(96, 97, 98, 0.5);
 }
+@media (max-width: 992px) {
+    .faq-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        padding-bottom: 15px;
+        background-color: var(--light-blue);
+        box-shadow: 0 5px 5px rgba(96, 97, 98, 0.5);
+    }
+}
 
 .faq-container-gray {
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-left: 10rem;
+    padding-right: 10rem;
     padding-bottom: 15px;
     background-color: var(--light-gray);
     box-shadow: 0 5px 5px rgba(49, 49, 49, 0.3);
+}
+@media (max-width: 992px) {
+    .faq-container-gray {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        padding-bottom: 15px;
+        background-color: var(--light-gray);
+        box-shadow: 0 5px 5px rgba(49, 49, 49, 0.3);
+    }
 }
 
 .faq-item {

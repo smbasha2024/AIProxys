@@ -1,16 +1,23 @@
 // FAQ toggle functionality
 function toggleAnswer(element) {
     const answer = element.nextElementSibling;
-    const icon = element.querySelector('i');
-    
-    if (answer.classList.contains('active')) {
-        answer.classList.remove('active');
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-    } else {
-        answer.classList.add('active');
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
+    //const icon = element.querySelector('i');
+    const icon = element.children[0]
+    //console.log('Toggling answer for:', answer, icon, element.children[0]);
+    if(answer) {
+      if (answer.classList.contains('active')) {
+          answer.classList.remove('active');
+          if(icon) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+          }
+      } else {
+          answer.classList.add('active');
+          if(icon){
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+          }
+      }
     }
 }
 
