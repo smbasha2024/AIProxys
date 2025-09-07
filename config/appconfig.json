@@ -1,6 +1,6 @@
 {
-    "apiBaseUrl": "http://127.0.0.1:8000/",
-    "apiBaseEmail": "smbasha2024@gmail.com",
+    "apiBaseUrl": "https://aiproxysserv.onrender.com/",
+    "apiBaseEmail": "basha@aiproxybots.com",
     "apiKeyEmail": "QUlQcm94eXNTZXJ2ZXJfRW1haWxfQVBJX0tleTpBbGxhaDc4NiM=",
     "theme": "dark",
     "maxItems": 20

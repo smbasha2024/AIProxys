@@ -70,6 +70,7 @@
 */
         // Load page dynamically
         let loadSuccess = false;
+        if (pageId === 'home-logo') pageId = 'home';
         if ((pageEditor !== null) && (pageEditor !== undefined) && (pageEditor === "true")) {
             await loadContentWithEditor(pageId);
         } else {
@@ -156,15 +157,6 @@
                 bsCollapse.hide();
             }
             // To Close any open dropdowns
-        }
-    });
-
-    // Highlight nav links based on initial URL hash
-    document.addEventListener("DOMContentLoaded", function() {
-        // Load initial page from URL or default to "home"
-        const initialPage = window.location.hash.substring(1) || 'home';
-        if (window.navigateToPage) {
-            window.navigateToPage(initialPage, {}, false);
         }
     });
 

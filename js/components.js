@@ -120,7 +120,7 @@ async function loadContent(page) {
   await loadComponent(page, 'content-container','');
   //console.log('page - ', page);
 
-  if((page !== 'home') && (page !== 'index') && (page !== '#')) {
+  if((page !== 'index') && (page !== '#')) {
     loadMenuTitle(page);
   }
 
@@ -136,7 +136,7 @@ async function loadContentWithEditor(page) {
   await loadComponent(page, 'content-container','');
   //console.log('page - ', page);
 
-  if((page !== 'home') && (page !== 'index') && (page !== '#')) {
+  if((page !== 'index') && (page !== '#')) {
     loadMenuTitle(page);
   }
 
