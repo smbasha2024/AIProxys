@@ -81,6 +81,19 @@
       $(document).ready(function() {
         initializeTestimonialCarousel();
       });
+
+      // spinner helpers
+        window.showSpinner = function() {
+            $("#spinner").addClass("show");
+        }
+
+        window.hideSpinner = function() {
+            $("#spinner").removeClass("show");
+        }
+
+        window.delayPageLoad = function(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
     
 })(jQuery);
 

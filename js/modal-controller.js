@@ -20,7 +20,6 @@ window.ModalController = (function() {
             } else {
                 await loadModalContent(page, modalId);
             }
-
             // Store reference
             modalScripts.set(modalId, page);
 
@@ -153,6 +152,7 @@ window.ModalController = (function() {
             let scriptPath = null;
             let hasEditor = null;
 
+
             const isDataEmpty = Object.keys(data).length === 0;
             if(!isDataEmpty) {
                 const hasScriptPath = "scriptPath" in data;
@@ -170,7 +170,8 @@ window.ModalController = (function() {
                     }
                 }
                 return success;
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error opening modal ${modalId}:`, error);
                 return false;
             }

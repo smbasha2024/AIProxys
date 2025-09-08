@@ -71,6 +71,9 @@
         // Load page dynamically
         let loadSuccess = false;
         if (pageId === 'home-logo') pageId = 'home';
+    
+        showSpinner(); //Show spinner before loading the page //await delayPageLoad(1500); // Simulate loading delay
+    
         if ((pageEditor !== null) && (pageEditor !== undefined) && (pageEditor === "true")) {
             await loadContentWithEditor(pageId);
         } else {
@@ -78,7 +81,8 @@
         }
 
         loadSuccess = true;
-        // console.log('loadSuccess: ', loadSuccess);
+        hideSpinner(); //hide spinner after loading the page
+
         // Scroll to top
         if (pageId !== "contact") {
             moveToTop();

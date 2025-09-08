@@ -18,60 +18,77 @@ async function checkIfScriptExists(scriptPath) {
 
 async function loadComponentContent(path, containerId) {
   try {
-    //console.log(containerId, `components/${path}.html`);
     const container = document.getElementById(containerId);
-    
-    /*
-    if (container.getAttribute("data-loaded") === "true") {
-      console.log(`Already loaded: ${path}`);
-      return;
-    }
-    */
 
-    const response = await fetch(`components/${path}.html`);
-    if (!response.ok) throw new Error(`Failed to load ${path}`);
-    const html = await response.text();
-    
-    container.innerHTML = html;
-    container.setAttribute("data-loaded", "true");
+    //PageManager.getAllComponentsCache();
+    const compCache = PageManager.getComponentCache(`${path}`);
 
-    // Load associated JavaScript (e.g., header.js for header.html)
-    
-    var scriptPath = `${path}`;
-    if(scriptPath.includes('/')) {
-      scriptPath = 'components/' + scriptPath.replace('/','/js/') + '.js';
-    }
-    else
-    {
-      scriptPath = 'components/js/' + scriptPath + '.js';
-    }
-    //console.log('script path : ', scriptPath);
-    
-    const fullPath = new URL(scriptPath, document.baseURI).href;
-    
-    if (document.querySelector(`script[src="${scriptPath}"]`)){ 
-    //if ([...document.scripts].some(s => s.src === fullPath)) {
-      //console.log("Already attached script", scriptPath);
-      return;
-    }
-    
-   /*
-    const existingScript = document.querySelector(`script[src="${scriptPath}"]`);
-    if (existingScript) {
-        // Remove it so that we can reload fresh
-        existingScript.remove();
-        console.log('Removed script file', scriptPath);
-    }
-    */
-    const scriptResponse = await fetch(scriptPath);
-    if (scriptResponse.ok) {
-      //const scriptResponse = await fetch(scriptPath);
-      const script = await scriptResponse.text();
+    let html = '';
+    let script = '';
+    let scriptPath = null;
+
+    if (compCache !== undefined) {
+      // Fetch HTML and Javascript content from cache
+      html = compCache.html;
+      script = compCache.js;
+      scriptPath = compCache.scriptPath;
+
+      container.innerHTML = html;
+      container.setAttribute("data-loaded", "true");
+
       const scriptElement = document.createElement('script');
-      //scriptElement.textContent = script;
-      scriptElement.src = scriptPath;
-      scriptElement.defer = true;
-      document.body.appendChild(scriptElement);
+        
+      if (!document.querySelector(`script[data-path="${scriptPath}"]`)) {
+        scriptElement.textContent = script;
+        scriptElement.dataset.path = scriptPath; // mark it
+        document.body.appendChild(scriptElement);
+
+        //eval(scriptCache.get(scriptPath));
+        //scriptElement.src = scriptPath;
+        //scriptElement.defer = true;
+      }
+      /*
+      else {
+        console.log(`Script already attached: ${scriptPath}`);
+      }
+      */
+      //console.log('HTML and script are from cache', scriptPath);
+    }
+    else {
+      // Fetch HTML and Javascript content from external files
+      const response = await fetch(`components/${path}.html`);
+      if (!response.ok) throw new Error(`Failed to load ${path}`);
+      html = await response.text();
+      
+      container.innerHTML = html;
+      container.setAttribute("data-loaded", "true");
+      
+      scriptPath = `${path}`;
+      if(scriptPath.includes('/')) {
+        scriptPath = 'components/' + scriptPath.replace('/','/js/') + '.js';
+      }
+      else
+      {
+        scriptPath = 'components/js/' + scriptPath + '.js';
+      }
+      
+      const fullPath = new URL(scriptPath, document.baseURI).href;
+      
+      if (document.querySelector(`script[src="${scriptPath}"]`)){ 
+        return;
+      }
+      
+      const scriptResponse = await fetch(scriptPath);
+      script = await scriptResponse.text();
+      if (scriptResponse.ok) {
+        const scriptElement = document.createElement('script');
+        //scriptElement.textContent = script;
+        scriptElement.src = scriptPath;
+        scriptElement.defer = true;
+        document.body.appendChild(scriptElement);
+      }
+      //console.log('HTML and script are from external file load', scriptPath);
+      PageManager.setComponentCache(`${path}`, {html: html, js: script, scriptPath: scriptPath});
     }
 
   } catch (error) {
@@ -173,7 +190,8 @@ async function moveToTop ()
 // Initialize the app
 window.addEventListener('DOMContentLoaded', async () => {
   await loadStaticComponents();
-  
-  // Example: Load Home page and its sub-components
+  // Load Home page and its sub-components
+  showSpinner(); //await delayPageLoad(1500); // Simulate loading delay
   await loadContent('home');
+  hideSpinner();
 });

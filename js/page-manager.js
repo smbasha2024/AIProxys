@@ -9,6 +9,7 @@ window.PageManager = (function() {
         'page:focus': [],
         'app:initialized': []
     };
+    const componentCache = new Map();
 
     function triggerEvent(event, data) {
         logEvent(event, data);
@@ -49,6 +50,23 @@ window.PageManager = (function() {
             if (eventHandlers[event]) {
                 eventHandlers[event] = eventHandlers[event].filter(h => h !== handler);
             }
+        },
+
+        // 👇 Expose componentCache here
+        setComponentCache(key, value) {
+            if((value === undefined) || (value === null)) { 
+                console.log('Invalid value for cache, skipping...'); 
+                return;
+            }
+            componentCache.set(key, value);
+        },
+
+        getComponentCache(key) {
+            return componentCache.get(key);
+        },
+        
+        getAllComponentsCache() {
+            console.log([...componentCache.entries()]);
         }
     };
 })();

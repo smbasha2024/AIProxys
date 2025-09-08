@@ -3,6 +3,8 @@ async function loadModalComponentContent(path, containerId, modalName) {
   try {
     //console.log(containerId, `components/${path}.html`);
     const container = document.getElementById(containerId);
+    
+    showSpinner(); 
 
     const response = await fetch(`components/${path}.html`);
     if (!response.ok) throw new Error(`Failed to load ${path}`);
@@ -24,6 +26,7 @@ async function loadModalComponentContent(path, containerId, modalName) {
     
     const fullPath = new URL(scriptPath, document.baseURI).href;
     if (document.querySelector(`script[src="${scriptPath}"]`)){ 
+      hideSpinner();
       return;
     }
 
@@ -37,10 +40,12 @@ async function loadModalComponentContent(path, containerId, modalName) {
         scriptElement.defer = true;
         document.body.appendChild(scriptElement);
     }
-
   } catch (error) {
       //console.error(`Error loading ${path}:`, error);
       console.log(`Error loading ${path}:`, error);
+  }
+  finally{
+    hideSpinner();
   }
 }
 

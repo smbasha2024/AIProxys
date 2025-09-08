@@ -1,12 +1,9 @@
 
-const searchData = localStorage.getItem('appData')? JSON.parse(localStorage.getItem('appData')) : [];
-
-//console.log("Basha:", searchData)
-
 /************************************* API Calls ***************************/
 //        All API calls are here
 /***************************************************************************/
 async function searchPages(){
+    const searchData = localStorage.getItem('appData')? JSON.parse(localStorage.getItem('appData')) : [];
     const searchInput = document.getElementById('searchInput');
     const query = searchInput.value.trim().toLowerCase();
     //console.log('Basha: ', query, searchData);
@@ -137,6 +134,4 @@ function closeSearchModal() {
     modalInstance.hide();
 }
 
-// Initialize with a sample search
-setTimeout(searchPages, 500);
 
