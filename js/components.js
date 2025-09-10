@@ -47,13 +47,6 @@ async function loadComponentContent(path, containerId) {
     }
     else {
       // Fetch HTML and Javascript content from external files
-      const response = await fetch(`components/${path}.html`);
-      if (!response.ok) throw new Error(`Failed to load ${path}`);
-      html = await response.text();
-      
-      container.innerHTML = html;
-      container.setAttribute("data-loaded", "true");
-      
       scriptPath = `${path}`;
       if(scriptPath.includes('/')) {
         scriptPath = 'components/' + scriptPath.replace('/','/js/') + '.js';
@@ -62,21 +55,32 @@ async function loadComponentContent(path, containerId) {
       {
         scriptPath = 'components/js/' + scriptPath + '.js';
       }
+      //const fullPath = new URL(scriptPath, document.baseURI).href;
+
+      [html, script] = await Promise.all([
+        fetch(`components/${path}.html`).then(r => r.text()),
+        fetch(scriptPath).then(r => r.text())
+      ]);
+
+      //const response = await fetch(`components/${path}.html`);
+      //if (!response.ok) throw new Error(`Failed to load ${path}`);
+      //html = await response.text();
       
-      const fullPath = new URL(scriptPath, document.baseURI).href;
+      container.innerHTML = html;
+      container.setAttribute("data-loaded", "true");
       
       if (document.querySelector(`script[src="${scriptPath}"]`)){ 
         return;
       }
       
-      const scriptResponse = await fetch(scriptPath);
-      script = await scriptResponse.text();
-      if (scriptResponse.ok) {
+      //const scriptResponse = await fetch(scriptPath);
+      //script = await scriptResponse.text();
+      //if (scriptResponse.ok) {
         const scriptElement = document.createElement('script');
         scriptElement.src = scriptPath;
         scriptElement.defer = true;
         document.body.appendChild(scriptElement);
-      }
+      //}
       PageManager.setComponentCache(`${path}`, {html: html, js: script, scriptPath: scriptPath});
     }
 
@@ -92,11 +96,13 @@ async function loadComponent(path, containerId) {
     if ((containerId !== 'header-container') && (containerId !== 'footer-container')) {
       const container = document.getElementById(containerId);
 
-      // Load component content
-      await loadComponentContent(path, containerId);
+      await Promise.all([
+        // Load component content
+        await loadComponentContent(path, containerId),
 
-      // Load sub-components recursively (if any)
-      await loadSubComponents(container, path);
+        // Load sub-components recursively (if any)
+        await loadSubComponents(container, path)
+      ]);
     }
   } catch (error) {
     console.log(`Error loading ${path}:`, error);
