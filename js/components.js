@@ -42,17 +42,8 @@ async function loadComponentContent(path, containerId) {
         scriptElement.textContent = script;
         scriptElement.dataset.path = scriptPath; // mark it
         document.body.appendChild(scriptElement);
-
         //eval(scriptCache.get(scriptPath));
-        //scriptElement.src = scriptPath;
-        //scriptElement.defer = true;
       }
-      /*
-      else {
-        console.log(`Script already attached: ${scriptPath}`);
-      }
-      */
-      //console.log('HTML and script are from cache', scriptPath);
     }
     else {
       // Fetch HTML and Javascript content from external files
@@ -82,12 +73,10 @@ async function loadComponentContent(path, containerId) {
       script = await scriptResponse.text();
       if (scriptResponse.ok) {
         const scriptElement = document.createElement('script');
-        //scriptElement.textContent = script;
         scriptElement.src = scriptPath;
         scriptElement.defer = true;
         document.body.appendChild(scriptElement);
       }
-      //console.log('HTML and script are from external file load', scriptPath);
       PageManager.setComponentCache(`${path}`, {html: html, js: script, scriptPath: scriptPath});
     }
 
@@ -118,8 +107,10 @@ async function loadComponent(path, containerId) {
 async function loadSubComponents(parentElement, parentPath) {
   const subContainers = parentElement.querySelectorAll('[data-subcomponent]');
   
-  for (const container of subContainers) {
+  //for (const container of subContainers) {
+  const promises = Array.from(subContainers).map(container => {
     const subName = container.dataset.subcomponent;
+    //console.log("Loading sub-component: ", subName);
     var subPath = `${parentPath}/${subName}`;
 
     if (subName.includes('/')) {
@@ -128,8 +119,10 @@ async function loadSubComponents(parentElement, parentPath) {
     }
 
     // Load Subcomponent Conent
-    await loadComponentContent(subPath, container.id);
-  }
+    return loadComponentContent(subPath, container.id);
+  });
+
+  await Promise.all(promises);
 }
 
 // Load main content (Home, FAQ, Newsletter)
