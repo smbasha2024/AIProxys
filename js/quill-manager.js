@@ -57,7 +57,7 @@ window.QuillManager = (function() {
                     [{ font: Quill.import('formats/font').allowlist }],
                     [{ size: Quill.import("attributors/class/size").whitelist }],
                     // Text formatting
-                    ['bold', 'italic', 'underline', 'strike'],
+                    ['bold', 'italic', 'underline'], //, 'strike'
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'align': [] }],
                     
@@ -66,7 +66,7 @@ window.QuillManager = (function() {
                     //[{ 'indent': '-1'}, { 'indent': '+1' }],
                     
                     // Headers
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    //[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     
                     // Other
                     //['link', 'image']

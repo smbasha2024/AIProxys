@@ -89,7 +89,7 @@ async function resultsToNewsForm(strResult, bSuccess) {
 async function subscribeToNewsletter() {
   const btnSubscribe = document.getElementById('emailSubscribe');
   try {
-    btnSubscribe.classList.add('loading');
+    btnSubscribe.classList.add('loading-blue');
 
     btnSubscribe.disabled = true;
     //btnSubscribe.textContent = 'Submitting...';
@@ -109,7 +109,7 @@ async function subscribeToNewsletter() {
     btnSubscribe.disabled = false;
     //btnSubscribe.textContent = "Send Message";
     document.body.style.cursor = 'default';
-    btnSubscribe.classList.remove('loading');
+    btnSubscribe.classList.remove('loading-blue');
   }
 }
 

@@ -373,8 +373,8 @@ h6,
     height: 100%;
     top: 0;
     left: 0;
-    background: url(../img/bg-about-img.png) top left no-repeat;
-    background-size: contain;
+    /*background: url(../img/bg-about-img.png) top left no-repeat;
+    background-size: contain;*/
 }
 
 
@@ -723,7 +723,25 @@ input, textarea {
     border-top-color: transparent;
     animation: spin 0.8s linear infinite;
 }
-  
+
+.loading-blue {
+    position: relative;
+    padding-right: 30px;
+}
+
+.loading-blue::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
 @keyframes spin {
     to { transform: translateY(-50%) rotate(360deg); }
 }
