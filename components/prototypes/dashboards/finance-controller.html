@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Controller Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #123c67;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #3498db;
+            --light-bg: #f8f9fa;
+            --filter-bg: #e8f4f8;
+            --purple-color: #6f42c1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #313132, #313132);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+         .kpi-title {
+            font-size: 1.1rem;
+            color: #01182c;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e4dcf6; /* bottom border line */
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .trend-up {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .trend-down {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #b6b6b7; /* bottom border line */
+        }
+        
+        .chart-wrapper {
+            flex: none;
+            position: relative;
+            height: 50vh;
+            width: 40vw;
+            padding-left: 5px;
+        }
+        
+        .filter-section {
+            background: var(--filter-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid #c5e3ec;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+        
+        .heatmap-cell {
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .risk-low {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: #196F3D;
+        }
+        
+        .risk-medium {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #9C6400;
+        }
+        
+        .risk-high {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #922B21;
+        }
+        
+        .department-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .finance { background-color: #E8F6F3; color: #1D8348; }
+        .it { background-color: #EBF5FB; color: #2874A6; }
+        .production { background-color: #FEF9E7; color: #9A7D0A; }
+        .hr { background-color: #F4ECF7; color: #6C3483; }
+        .legal { background-color: #FDEDEC; color: #A93226; }
+        .procurement { background-color: #EAF2F8; color: #2E86C1; }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            border-bottom: 3px solid var(--secondary-color);
+            background-color:#e6e9eb;
+        }
+        
+        .tab-content {
+            padding-top: 1.5rem;
+        }
+        
+        .time-filter-btn {
+            border-radius: 20px;
+            margin: 0 2px;
+        }
+        
+        .time-filter-btn.active {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: hwb(58 62% 2%);
+        }
+        
+        .tab-pane {
+            min-height: 300px;
+        }
+        
+        .tab-pane .row {
+            height: 100%;
+        }
+        
+        .tab-pane .chart-container {
+            height: 100%;
+        }
+        
+        .equal-height-cards {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .equal-height-cards > .col-md-6 {
+            display: flex;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .budget-positive {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        
+        .budget-negative {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        
+        .automation-impact {
+            color: var(--purple-color);
+            font-weight: 600;
+        }
+        
+        .annotation-line {
+            border-color: var(--danger-color);
+            border-width: 2px;
+            border-style: dashed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="h3 mb-0">Finance Controller Dashboard</h1>
+                    <p class="mb-0 opacity-75">Financial oversight of compliance operations, costs, and exposure</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group" id="timeFilter">
+                        <button class="btn btn-sm time-filter-btn btn-outline-light" data-period="monthly">Monthly</button>
+                        <button class="btn btn-sm time-filter-btn btn-outline-light active" data-period="quarterly">Quarterly</button>
+                        <button class="btn btn-sm time-filter-btn btn-outline-light" data-period="yearly">Yearly</button>
+                    </div>
+                    <span class="mx-2 text-light">|</span>
+                    <span class="text-light">Last updated: Today, 10:30 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="filter-title">Data Filters</div>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="timePeriod">
+                        <option>Last 30 Days</option>
+                        <option selected>Last Quarter</option>
+                        <option>Last 6 Months</option>
+                        <option>Year to Date</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" id="department">
+                        <option selected>All Departments</option>
+                        <option>Finance</option>
+                        <option>IT</option>
+                        <option>Production</option>
+                        <option>HR</option>
+                        <option>Legal</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Regulation Type</label>
+                    <select class="form-select" id="regulationType">
+                        <option selected>All Regulations</option>
+                        <option>Financial Compliance</option>
+                        <option>Data Protection</option>
+                        <option>Labor Laws</option>
+                        <option>Environmental</option>
+                        <option>Safety Standards</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Risk Level</label>
+                    <select class="form-select" id="riskLevel">
+                        <option selected>All Risk Levels</option>
+                        <option>High Risk</option>
+                        <option>Medium Risk</option>
+                        <option>Low Risk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4" style="background-color: #efecec; padding-bottom: 10px;">
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Compliance Spend (Q3'25)</div>
+                    <div class="kpi-value">₹ 8.9 Cr</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        6% vs Last Quarter
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Budget vs Actual</div>
+                    <div class="kpi-value budget-positive">-2.4%</div>
+                    <div class="trend-indicator trend-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                        </svg>
+                        Savings vs Budget
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Penalty Avoidance (Automation)</div>
+                    <div class="kpi-value automation-impact">₹ 1.5 Cr</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        18% QoQ
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Rework Cost</div>
+                    <div class="kpi-value">₹ 0.6 Cr</div>
+                    <div class="trend-indicator trend-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                        </svg>
+                        10% vs Last Quarter
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row g-2"  style="background-color: #e8e4e4;">
+            <!-- Budget vs Actual Spend -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Compliance Budget vs Actual Spend</div>
+                    <div class="chart-wrapper">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cost Allocation by Department -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Cost Allocation by Department</div>
+                    <div class="chart-wrapper">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-2"  style="background-color: #e8e4e4;">
+            <!-- Waterfall Chart -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Budget Variance Analysis</div>
+                    <div class="chart-wrapper">
+                        <canvas id="waterfallChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Penalty/Rework Trend -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Penalty & Rework Cost Trend</div>
+                    <div class="chart-wrapper">
+                        <canvas id="penaltyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2"  style="background-color: #e8e4e4;">
+            <!-- Audit Readiness Heatmap -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Audit Readiness Heatmap</div>
+                    <div class="chart-wrapper">
+                        <canvas id="heatmapChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Audit Observations Summary -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Audit Observations Summary</div>
+                    <div class="chart-wrapper">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>Open</th>
+                                    <th>Closed</th>
+                                    <th>Avg Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="department-tag finance">Finance</span></td>
+                                    <td>2</td>
+                                    <td>10</td>
+                                    <td>12</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag it">IT</span></td>
+                                    <td>3</td>
+                                    <td>8</td>
+                                    <td>18</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag production">Production</span></td>
+                                    <td>1</td>
+                                    <td>15</td>
+                                    <td>9</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag hr">HR</span></td>
+                                    <td>1</td>
+                                    <td>12</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag legal">Legal</span></td>
+                                    <td>0</td>
+                                    <td>8</td>
+                                    <td>7</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Total Observations:</span>
+                                <strong>21</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Closed This Quarter:</span>
+                                <strong>53</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Avg Closure Time:</span>
+                                <strong>14 Days</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Analysis Section -->
+        <div class="row mt-4" style="background-color: #dadedc; padding-top: 10px; padding-bottom: 10px;">
+            <div class="col-12">
+                <div class="chart-container">
+                    <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cost-tab" data-bs-toggle="tab" data-bs-target="#cost" type="button" role="tab">Cost Analysis</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab">Risk Exposure</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="efficiency-tab" data-bs-toggle="tab" data-bs-target="#efficiency" type="button" role="tab">Efficiency Metrics</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="analysisTabsContent">
+                        <div class="tab-pane fade show active" id="cost" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Regulation-wise Cost Breakdown</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="regulationCostChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Cost Optimization Opportunities</div>
+                                        <div class="chart-wrapper">
+                                            <ul class="list-group">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    IT Compliance Automation
+                                                    <span class="badge bg-success rounded-pill">Save ₹45L/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Vendor Compliance Management
+                                                    <span class="badge bg-success rounded-pill">Save ₹32L/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Legal Contract Standardization
+                                                    <span class="badge bg-success rounded-pill">Save ₹28L/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Training Program Optimization
+                                                    <span class="badge bg-success rounded-pill">Save ₹15L/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Audit Process Streamlining
+                                                    <span class="badge bg-success rounded-pill">Save ₹22L/year</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="risk" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Financial Risk Analysis</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="financialRiskChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Top Financial Risk Areas</div>
+                                        <div >
+                                            <div class="mb-3">
+                                                <span class="badge bg-danger me-1 p-2 mb-2 d-block">Tax Compliance</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Data Privacy Fines</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Labor Compliance</span>
+                                                <span class="badge bg-info me-1 p-2 mb-2 d-block">Environmental Penalties</span>
+                                            </div>
+                                            <div class="alert alert-warning">
+                                                <strong>Attention Needed:</strong> Tax compliance has potential exposure of ₹2.1 Cr if not addressed.
+                                            </div>
+                                            <div class="alert alert-info">
+                                                <strong>Monitor:</strong> New data protection regulations coming into effect next quarter.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="efficiency" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Automation Impact Analysis</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="automationChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Efficiency Metrics by Department</div>
+                                        <div class="chart-wrapper">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Department</th>
+                                                        <th>Cost/Process</th>
+                                                        <th>Closure Rate</th>
+                                                        <th>ROI</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span class="department-tag finance">Finance</span></td>
+                                                        <td>₹12,500</td>
+                                                        <td>92%</td>
+                                                        <td>75%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag it">IT</span></td>
+                                                        <td>₹18,300</td>
+                                                        <td>88%</td>
+                                                        <td>50%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag production">Production</span></td>
+                                                        <td>₹15,700</td>
+                                                        <td>95%</td>
+                                                        <td>60%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag hr">HR</span></td>
+                                                        <td>₹9,800</td>
+                                                        <td>90%</td>
+                                                        <td>45%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag legal">Legal</span></td>
+                                                        <td>₹22,400</td>
+                                                        <td>89%</td>
+                                                        <td>65%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize all charts
+        let budgetChart, allocationChart, waterfallChart, penaltyChart, heatmapChart;
+        let regulationCostChart, financialRiskChart, automationChart;
+
+        function initializeCharts() {
+            // Budget vs Actual Chart
+            const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+            budgetChart = new Chart(budgetCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                    datasets: [
+                        {
+                            label: 'Budgeted Spend (₹ Cr)',
+                            data: [2.5, 2.8, 3.0, 2.7, 2.9, 3.1, 3.0, 3.2, 3.5],
+                            borderColor: '#6c757d',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Actual Spend (₹ Cr)',
+                            data: [2.45, 3.0, 2.9, 2.6, 2.8, 3.0, 2.9, 3.1, 3.3],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '₹ ' + context.parsed.y.toFixed(2) + ' Cr';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹ Cr)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Cost Allocation Chart
+            const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+            allocationChart = new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Finance', 'IT', 'Production', 'HR', 'Legal', 'Procurement'],
+                    datasets: [{
+                        data: [25, 18, 22, 12, 15, 8],
+                        backgroundColor: [
+                            'rgba(39, 174, 96, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(102, 51, 153, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Waterfall Chart
+            const waterfallCtx = document.getElementById('waterfallChart').getContext('2d');
+            waterfallChart = new Chart(waterfallCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Initial Budget', 'Regulatory Updates', 'Automation Savings', 'Training Costs', 'Consulting Fees', 'Penalty Costs', 'Final Spend'],
+                    datasets: [{
+                        label: 'Amount (₹ Lakhs)',
+                        data: [320, 40, -25, 15, 20, 10, 380],
+                        backgroundColor: [
+                            'rgba(108, 117, 125, 0.7)', // Initial Budget - Gray
+                            'rgba(231, 76, 60, 0.7)',   // Regulatory Updates - Red
+                            'rgba(39, 174, 96, 0.7)',   // Automation Savings - Green
+                            'rgba(243, 156, 18, 0.7)',  // Training Costs - Orange
+                            'rgba(52, 152, 219, 0.7)',  // Consulting Fees - Blue
+                            'rgba(231, 76, 60, 0.7)',   // Penalty Costs - Red
+                            'rgba(39, 174, 96, 0.7)'    // Final Spend - Green
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Penalty & Rework Chart
+            const penaltyCtx = document.getElementById('penaltyChart').getContext('2d');
+            penaltyChart = new Chart(penaltyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025', 'Q2 2025', 'Q3 2025'],
+                    datasets: [
+                        {
+                            label: 'Penalty Costs (₹ Lakhs)',
+                            data: [85, 72, 65, 58, 45, 38, 30],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: 'rgb(231, 76, 60)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Rework Costs (₹ Lakhs)',
+                            data: [45, 42, 38, 35, 32, 28, 25],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)',
+                            borderColor: 'rgb(243, 156, 18)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Heatmap Chart
+            const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
+            heatmapChart = new Chart(heatmapCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Documentation', 'Financial Control', 'Policy Updates', 'Training', 'Automation', 'Reporting'],
+                    datasets: [
+                        {
+                            label: 'Finance',
+                            data: [85, 92, 78, 88, 80, 90],
+                            backgroundColor: 'rgba(39, 174, 96, 0.7)'
+                        },
+                        {
+                            label: 'IT',
+                            data: [75, 82, 85, 70, 60, 78],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                        },
+                        {
+                            label: 'Production',
+                            data: [80, 85, 75, 82, 70, 80],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)'
+                        },
+                        {
+                            label: 'HR',
+                            data: [90, 78, 88, 92, 55, 85],
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)'
+                        },
+                        {
+                            label: 'Legal',
+                            data: [88, 90, 92, 85, 75, 88],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Compliance Score (%)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Regulation Cost Chart
+            const regulationCostCtx = document.getElementById('regulationCostChart').getContext('2d');
+            regulationCostChart = new Chart(regulationCostCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Income Tax', 'GST', 'Data Protection', 'Labor Laws', 'Environmental', 'Safety Standards', 'Contract Laws'],
+                    datasets: [
+                        {
+                            label: 'Budget (₹ Lakhs)',
+                            data: [85, 75, 65, 40, 35, 30, 50],
+                            backgroundColor: 'rgba(108, 117, 125, 0.7)'
+                        },
+                        {
+                            label: 'Actual (₹ Lakhs)',
+                            data: [80, 78, 70, 42, 32, 28, 52],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Financial Risk Chart
+            const financialRiskCtx = document.getElementById('financialRiskChart').getContext('2d');
+            financialRiskChart = new Chart(financialRiskCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Tax Compliance', 'Data Privacy', 'Labor Laws', 'Environmental', 'Safety Standards', 'Contract Compliance'],
+                    datasets: [
+                        {
+                            label: 'Current Risk Level',
+                            data: [75, 65, 60, 55, 50, 70],
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgb(52, 152, 219)',
+                            pointBackgroundColor: 'rgb(52, 152, 219)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(52, 152, 219)'
+                        },
+                        {
+                            label: 'Previous Quarter',
+                            data: [80, 70, 65, 60, 55, 75],
+                            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                            borderColor: 'rgb(231, 76, 60)',
+                            pointBackgroundColor: 'rgb(231, 76, 60)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(231, 76, 60)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Automation Chart
+            const automationCtx = document.getElementById('automationChart').getContext('2d');
+            automationChart = new Chart(automationCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025', 'Q2 2025', 'Q3 2025'],
+                    datasets: [
+                        {
+                            label: 'Penalty Avoidance (₹ Cr)',
+                            data: [0.8, 0.9, 1.1, 1.2, 1.3, 1.4, 1.5],
+                            borderColor: '#6f42c1',
+                            backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Automation Investment (₹ Cr)',
+                            data: [0.5, 0.6, 0.7, 0.8, 0.8, 0.9, 0.9],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹ Cr)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            
+            // Add event listeners for time filter buttons
+            const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+            timeFilterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    timeFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // In a real application, you would update the charts based on the selected time period
+                    // For this demo, we'll just show an alert
+                    const period = this.getAttribute('data-period');
+                    console.log(`Time period changed to: ${period}`);
+                });
+            });
+            
+            // Add event listeners for filter dropdowns
+            const filterSelects = document.querySelectorAll('.form-select');
+            filterSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    // In a real application, you would update the charts based on the selected filters
+                    console.log(`Filter changed: ${this.id} = ${this.value}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

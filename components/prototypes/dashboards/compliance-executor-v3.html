@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Executor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1A3A5F;
+            --secondary-blue: #2C5282;
+            --accent-blue: #3182CE;
+            --light-bg: #F5F7FA;
+            --white: #FFFFFF;
+            --green: #4CAF50;
+            --orange: #FFC107;
+            --red: #F44336;
+            --gray: #9E9E9E;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --border-color: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-title i {
+            color: var(--accent-blue);
+        }
+
+        .filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: var(--white);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            margin-left: 20px;
+        }
+
+        .toggle-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--accent-blue);
+            color: var(--white);
+            border-color: var(--accent-blue);
+        }
+
+        /* KPI Cards */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            background-color: #e9eded;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, var(--white) 0%, #f8fafc 100%);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-card.overdue {
+            border-left-color: var(--red);
+        }
+
+        .kpi-card.due-today {
+            border-left-color: var(--orange);
+        }
+
+        .kpi-card.completed {
+            border-left-color: var(--green);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-title {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+            border-bottom: 3px solid #e4dcf6; /* bottom border line */
+        }
+
+        .kpi-icon {
+            font-size: 20px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: var(--green);
+        }
+
+        .trend-down {
+            color: var(--red);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 4fr 5fr 3fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            background-color: var(--white);
+        }
+
+        th:hover {
+            background-color: var(--light-bg);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-completed {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--green);
+        }
+
+        .status-in-progress {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--orange);
+        }
+
+        .status-overdue {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--red);
+        }
+
+        .status-on-hold {
+            background-color: rgba(158, 158, 158, 0.1);
+            color: var(--gray);
+        }
+
+        .priority-high {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* Heatmap Calendar */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .heatmap-day {
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .heatmap-day.empty {
+            background-color: transparent;
+        }
+
+        .heatmap-day.low {
+            background-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .heatmap-day.medium {
+            background-color: rgba(255, 193, 7, 0.5);
+        }
+
+        .heatmap-day.high {
+            background-color: rgba(244, 67, 54, 0.7);
+        }
+
+        .heatmap-day-label {
+            font-size: 11px;
+            text-align: center;
+            margin-top: 4px;
+            color: var(--text-light);
+        }
+
+        /* Gauge Chart Container */
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gauge-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: -40px;
+            margin-bottom: 10px;
+        }
+
+        .gauge-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .progress-fill.green {
+            background-color: var(--green);
+        }
+
+        .progress-fill.blue {
+            background-color: var(--accent-blue);
+        }
+
+        .progress-fill.orange {
+            background-color: var(--orange);
+        }
+
+        /* Checklist Items */
+        .checklist-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .checklist-item:hover {
+            background-color: var(--border-color);
+        }
+
+        .checklist-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .checklist-status.done {
+            background-color: var(--green);
+            color: white;
+        }
+
+        .checklist-status.pending {
+            background-color: var(--orange);
+            color: white;
+        }
+
+        .checklist-status.in-progress {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .checklist-meta {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .insights-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .insights-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .insights-content {
+            background-color: rgba(49, 130, 206, 0.05);
+            padding: 16px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .insight-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-blue);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Tab Container */
+        .tab-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            transition: background-color 0.2s;
+        }
+
+        .tab:hover {
+            background-color: var(--border-color);
+        }
+
+        .tab.active {
+            background-color: var(--accent-blue);
+            color: var(--white);
+        }
+
+        /* Dependency Network */
+        .dependency-network {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .network-node {
+            width: 80px;
+            height: 40px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            position: absolute;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .network-node:hover {
+            transform: scale(1.05);
+        }
+
+        .network-connection {
+            position: absolute;
+            height: 2px;
+            background-color: var(--border-color);
+        }
+
+        /* Task Actions */
+        .task-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-light);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .last-updated {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .blinking-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--green);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* View Containers */
+        .view-container {
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+        }
+
+        /* Audit Readiness Specific Styles */
+        .audit-kpi-card {
+            border-left-color: #9C27B0;
+        }
+
+        .compliance-score {
+            font-size: 42px;
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+            color: #9C27B0;
+        }
+
+        .compliance-level {
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .risk-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .risk-high {
+            background-color: var(--red);
+        }
+
+        .risk-medium {
+            background-color: var(--orange);
+        }
+
+        .risk-low {
+            background-color: var(--green);
+        }
+
+        .audit-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .timeline-date {
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 16px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--accent-blue);
+            left: -6px;
+            top: 4px;
+        }
+
+        .timeline-content.completed::before {
+            background-color: var(--green);
+        }
+
+        .timeline-content.upcoming::before {
+            background-color: var(--orange);
+        }
+
+        .findings-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .finding-card {
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            padding: 16px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .finding-card.critical {
+            border-left-color: var(--red);
+        }
+
+        .finding-card.resolved {
+            border-left-color: var(--green);
+        }
+
+        .finding-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .finding-meta {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Add these CSS styles for the calendar and network */
+
+        .calendar-view {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day {
+            height: 60px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .calendar-day-header {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        .calendar-day-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        .calendar-task {
+            font-size: 9px;
+            padding: 1px 3px;
+            margin-bottom: 1px;
+            border-radius: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calendar-task.high {
+            background-color: rgba(244, 67, 54, 0.2);
+            border-left: 2px solid var(--red);
+        }
+
+        .calendar-task.medium {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 2px solid var(--orange);
+        }
+
+        .calendar-task.low {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-left: 2px solid var(--green);
+        }
+
+        .calendar-day.today {
+            background-color: rgba(49, 130, 206, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .calendar-day.empty {
+            background-color: transparent;
+            border: 1px dashed var(--border-color);
+        }
+
+        .dependency-network {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .network-node {
+            width: 80px;
+            height: 40px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            position: absolute;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .network-node:hover {
+            transform: scale(1.05);
+        }
+
+        .network-connection {
+            position: absolute;
+            height: 2px;
+            background-color: var(--border-color);
+        }
+
+        .chart-tab-content {
+            display: none;
+        }
+
+        .chart-tab-content.active {
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Analysis Details */
+        .analysis-section {
+            margin-bottom: 20px;
+        }
+
+        .analysis-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary-blue);
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .analysis-label {
+            font-weight: 500;
+        }
+
+        .analysis-value {
+            font-weight: 600;
+        }
+
+        .analysis-value.positive {
+            color: var(--green);
+        }
+
+        .analysis-value.negative {
+            color: var(--red);
+        }
+
+        .recommendation {
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            border-left: 4px solid var(--green);
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header with Filters -->
+        <div class="header">
+            <h1 class="dashboard-title">
+                <i class="fas fa-tasks"></i>Task Executor Dashboard
+            </h1>
+            <div style="display: flex; align-items: center;">
+                <div class="filters">
+                    <div class="filter-item">
+                        <span class="filter-label">Time Range</span>
+                        <select id="timeRange">
+                            <option>Today</option>
+                            <option selected>This Week</option>
+                            <option>This Month</option>
+                            <option>Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">Department</span>
+                        <select id="department">
+                            <option>All Departments</option>
+                            <option>Finance</option>
+                            <option>Legal</option>
+                            <option>HR</option>
+                            <option>IT</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">Task Type</span>
+                        <select id="taskType">
+                            <option>All Types</option>
+                            <option>Documentation</option>
+                            <option>Review</option>
+                            <option>Submission</option>
+                            <option>Verification</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label">SLA Status</span>
+                        <select id="slaStatus">
+                            <option>All Statuses</option>
+                            <option>On Track</option>
+                            <option>At Risk</option>
+                            <option>Breached</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="view-toggle">
+                    <button class="toggle-btn active" id="operationalViewBtn">Operational View</button>
+                    <button class="toggle-btn" id="auditReadinessBtn">Audit Readiness</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operational View -->
+        <div id="operationalView" class="view-container active">
+            <!-- KPI Cards -->
+            <div class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Tasks</span>
+                        <span class="kpi-icon"><i class="fas fa-list-check"></i></span>
+                    </div>
+                    <div class="kpi-value">42</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 8%</span>
+                        <span>vs last week</span>
+                    </div>
+                </div>
+                <div class="kpi-card due-today">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Tasks Due Today</span>
+                        <span class="kpi-icon"><i class="fas fa-calendar-day"></i></span>
+                    </div>
+                    <div class="kpi-value">5</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 2</span>
+                        <span>vs yesterday</span>
+                    </div>
+                </div>
+                <div class="kpi-card overdue">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Overdue Tasks</span>
+                        <span class="kpi-icon"><i class="fas fa-clock"></i></span>
+                    </div>
+                    <div class="kpi-value">3</div>
+                    <div class="kpi-trend trend-down">
+                        <span>↓ 1</span>
+                        <span>vs last week</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">SLA Adherence</span>
+                        <span class="kpi-icon"><i class="fas fa-bullseye"></i></span>
+                    </div>
+                    <div class="kpi-value">92%</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 3%</span>
+                        <span>vs last month</span>
+                    </div>
+                </div>
+                <div class="kpi-card completed">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Audit Readiness</span>
+                        <span class="kpi-icon"><i class="fas fa-clipboard-check"></i></span>
+                    </div>
+                    <div class="kpi-value">78%</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 5%</span>
+                        <span>vs last week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Panel -->
+            <div class="insights-panel" style="background-color: #dadedc; padding-top: 10px; padding-bottom: 10px;">
+                <div class="insights-header">
+                    <i class="fas fa-robot"></i>
+                    <h3 class="insights-title">AI Insights & Recommendations</h3>
+                </div>
+                <div class="insights-content">
+                    <p class="insight-text">
+                        Your SLA adherence improved 6% this week. 3 tasks delayed due to Legal dependencies. 
+                        Suggested action: escalate Task T-108 to Legal Team Head.
+                    </p>
+                    <p class="insight-text">
+                        You have 2 high-priority tasks due today. Consider focusing on T-115 first as it has dependencies.
+                    </p>
+                    <div class="insight-action" id="viewDetailedAnalysis">
+                        <span>View detailed analysis</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Left Panel -->
+                
+                <div class="panel" style="background-color: #e8e4e4;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-calendar"></i> Task Calendar & Progress
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn" id="weekViewBtn">Week View</button>
+                            <button class="btn btn-primary" id="monthViewBtn">Month View</button>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-title">My Task Completion</span>
+                            <span class="progress-percent">65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="calendarView">
+                        <!-- Calendar view will be dynamically generated -->
+                    </div>
+                    
+                    <div class="tab-container">
+                        <div class="tab active" data-tab="dueDates">Due Dates</div>
+                        <div class="tab" data-tab="slaPerformance">SLA Performance</div>
+                        <div class="tab" data-tab="dependencies">Dependencies</div>
+                    </div>
+                    
+                    <div class="chart-tab-content active" id="dueDates-tab">
+                        <div class="chart-container">
+                            <canvas id="dueDatesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-tab-content" id="slaPerformance-tab">
+                        <div class="chart-container">
+                            <canvas id="slaPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-tab-content" id="dependencies-tab">
+                        <div class="dependency-network" id="dependencyNetwork">
+                            <!-- Dependency network will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Panel -->
+                <div class="panel" style="background-color: #e9eded;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-list-check"></i> My Compliance Tasks
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn">Filter</button>
+                            <button class="btn btn-primary">New Task</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="tasksTable">
+                            <thead>
+                                <tr>
+                                    <th data-sort="id">Task ID</th>
+                                    <th data-sort="description">Description</th>
+                                    <th data-sort="due">Due Date</th>
+                                    <th data-sort="status">Status</th>
+                                    <th data-sort="sla">SLA</th>
+                                    <th data-sort="priority">Priority</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>T-115</td>
+                                    <td>Submit Quarterly Compliance Report</td>
+                                    <td>Today</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td>2 days</td>
+                                    <td class="priority-high">High</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>T-114</td>
+                                    <td>Review Vendor Contracts for Compliance</td>
+                                    <td>Today</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>1 day</td>
+                                    <td class="priority-high">High</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>T-108</td>
+                                    <td>Update Data Privacy Policy</td>
+                                    <td>Oct 12, 2025</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td>5 days</td>
+                                    <td class="priority-medium">Medium</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>T-102</td>
+                                    <td>Annual Regulatory Filing</td>
+                                    <td>Oct 10, 2025</td>
+                                    <td><span class="status-badge status-overdue">Overdue</span></td>
+                                    <td>2 days ago</td>
+                                    <td class="priority-high">High</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>T-097</td>
+                                    <td>Employee Policy Acknowledgment Collection</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>7 days</td>
+                                    <td class="priority-medium">Medium</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>T-089</td>
+                                    <td>Internal Control Testing</td>
+                                    <td>Oct 18, 2025</td>
+                                    <td><span class="status-badge status-on-hold">On Hold</span></td>
+                                    <td>10 days</td>
+                                    <td class="priority-low">Low</td>
+                                    <td class="task-actions">
+                                        <div class="action-btn"><i class="fas fa-edit"></i></div>
+                                        <div class="action-btn"><i class="fas fa-check"></i></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="panel" style="background-color: #e8e4e4;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-gauge-high"></i> SLA & Audit Status
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn">Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="gauge-container">
+                        <div class="chart-container">
+                            <canvas id="slaGauge"></canvas>
+                        </div>
+                        <div class="gauge-value">92%</div>
+                        <div class="gauge-label">SLA Adherence</div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-title">Audit Readiness</span>
+                            <span class="progress-percent">78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill blue" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 20px 0 12px; font-size: 16px;">Audit Checklist</h3>
+                    <div class="checklist-container">
+                        <div class="checklist-item">
+                            <div class="checklist-status done"><i class="fas fa-check"></i></div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Policy Documentation</div>
+                                <div class="checklist-meta">
+                                    <span>Completed: Oct 5, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-status in-progress"><i class="fas fa-sync"></i></div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Control Testing</div>
+                                <div class="checklist-meta">
+                                    <span>Due: Oct 12, 2025</span>
+                                    <span>75% complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checklist-status pending"><i class="fas fa-clock"></i></div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Evidence Collection</div>
+                                <div class="checklist-meta">
+                                    <span>Due: Oct 15, 2025</span>
+                                    <span>Not started</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Readiness View -->
+        <div id="auditReadinessView" class="view-container">
+            <!-- Audit Readiness KPI Cards -->
+            <div class="kpi-section">
+                <div class="kpi-card audit-kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Overall Compliance Score</span>
+                        <span class="kpi-icon"><i class="fas fa-chart-line"></i></span>
+                    </div>
+                    <div class="kpi-value">87%</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 5%</span>
+                        <span>vs last quarter</span>
+                    </div>
+                </div>
+                <div class="kpi-card audit-kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Open Findings</span>
+                        <span class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                    </div>
+                    <div class="kpi-value">12</div>
+                    <div class="kpi-trend trend-down">
+                        <span>↓ 3</span>
+                        <span>vs last month</span>
+                    </div>
+                </div>
+                <div class="kpi-card audit-kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Critical Issues</span>
+                        <span class="kpi-icon"><i class="fas fa-times-circle"></i></span>
+                    </div>
+                    <div class="kpi-value">3</div>
+                    <div class="kpi-trend trend-down">
+                        <span>↓ 1</span>
+                        <span>vs last week</span>
+                    </div>
+                </div>
+                <div class="kpi-card audit-kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Remediation Progress</span>
+                        <span class="kpi-icon"><i class="fas fa-tasks"></i></span>
+                    </div>
+                    <div class="kpi-value">64%</div>
+                    <div class="kpi-trend trend-up">
+                        <span>↑ 8%</span>
+                        <span>vs last week</span>
+                    </div>
+                </div>
+                <div class="kpi-card audit-kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Days to Next Audit</span>
+                        <span class="kpi-icon"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                    <div class="kpi-value">42</div>
+                    <div class="kpi-trend">
+                        <span>On track</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Readiness Main Content -->
+            <div class="main-content">
+                <!-- Left Panel - Compliance Overview -->
+                <div class="panel" style="background-color: #e8e4e4;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-clipboard-check"></i> Compliance Overview
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn">Export Report</button>
+                            <button class="btn btn-primary">Remediation Plan</button>
+                        </div>
+                    </div>
+                    
+                    <div class="compliance-score">87%</div>
+                    <div class="compliance-level">Good - Meeting most compliance requirements</div>
+                    
+                    <div class="chart-container">
+                        <canvas id="complianceTrendChart"></canvas>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-title">Regulatory Domain Coverage</span>
+                            <span class="progress-percent">92%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill green" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-indicator">
+                        <div class="risk-color risk-high"></div>
+                        <span>High Risk Areas: 3</span>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-color risk-medium"></div>
+                        <span>Medium Risk Areas: 7</span>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-color risk-low"></div>
+                        <span>Low Risk Areas: 15</span>
+                    </div>
+                </div>
+
+                <!-- Middle Panel - Findings & Remediation -->
+                <div class="panel" style="background-color: #e9eded;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-search"></i> Audit Findings & Remediation
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn">Filter</button>
+                            <button class="btn btn-primary">Add Finding</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-container">
+                        <div class="tab active" data-tab="findings">Open Findings</div>
+                        <div class="tab" data-tab="remediation">Remediation Plan</div>
+                        <div class="tab" data-tab="evidence">Evidence Tracking</div>
+                    </div>
+                    
+                    <div class="chart-tab-content active" id="findings-tab">
+                        <div class="chart-container">
+                            <canvas id="findingsByCategoryChart"></canvas>
+                        </div>
+                        
+                        <div class="findings-container">
+                            <div class="finding-card critical">
+                                <div class="finding-title">Incomplete Vendor Due Diligence</div>
+                                <div class="finding-meta">
+                                    <span>Due: Oct 20, 2025</span>
+                                    <span>High Priority</span>
+                                </div>
+                            </div>
+                            <div class="finding-card">
+                                <div class="finding-title">Data Retention Policy Not Updated</div>
+                                <div class="finding-meta">
+                                    <span>Due: Nov 5, 2025</span>
+                                    <span>Medium Priority</span>
+                                </div>
+                            </div>
+                            <div class="finding-card">
+                                <div class="finding-title">Access Control Review Overdue</div>
+                                <div class="finding-meta">
+                                    <span>Due: Oct 25, 2025</span>
+                                    <span>Medium Priority</span>
+                                </div>
+                            </div>
+                            <div class="finding-card resolved">
+                                <div class="finding-title">Employee Training Documentation</div>
+                                <div class="finding-meta">
+                                    <span>Completed: Oct 10, 2025</span>
+                                    <span>Resolved</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-tab-content" id="remediation-tab">
+                        <div class="chart-container">
+                            <canvas id="remediationProgressChart"></canvas>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Finding</th>
+                                        <th>Owner</th>
+                                        <th>Due Date</th>
+                                        <th>Progress</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vendor Due Diligence</td>
+                                        <td>R. Sharma</td>
+                                        <td>Oct 20, 2025</td>
+                                        <td>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill orange" style="width: 40%"></div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Data Retention Policy</td>
+                                        <td>A. Patel</td>
+                                        <td>Nov 5, 2025</td>
+                                        <td>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill orange" style="width: 20%"></div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge status-pending">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Access Control Review</td>
+                                        <td>M. Nair</td>
+                                        <td>Oct 25, 2025</td>
+                                        <td>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill green" style="width: 80%"></div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-tab-content" id="evidence-tab">
+                        <div class="chart-container">
+                            <canvas id="evidenceStatusChart"></canvas>
+                        </div>
+                        
+                        <div class="checklist-container">
+                            <div class="checklist-item">
+                                <div class="checklist-status done"><i class="fas fa-check"></i></div>
+                                <div class="checklist-content">
+                                    <div class="checklist-title">Policy Documents</div>
+                                    <div class="checklist-meta">
+                                        <span>25/25 documents uploaded</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checklist-status in-progress"><i class="fas fa-sync"></i></div>
+                                <div class="checklist-content">
+                                    <div class="checklist-title">Control Testing Evidence</div>
+                                    <div class="checklist-meta">
+                                        <span>15/20 tests documented</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="checklist-item">
+                                <div class="checklist-status pending"><i class="fas fa-clock"></i></div>
+                                <div class="checklist-content">
+                                    <div class="checklist-title">Training Records</div>
+                                    <div class="checklist-meta">
+                                        <span>3/5 departments completed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel - Audit Timeline & Schedule -->
+                <div class="panel" style="background-color: #e8e4e4;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-calendar-alt"></i> Audit Schedule & Timeline
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn">Sync Calendar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="gauge-container">
+                        <div class="chart-container">
+                            <canvas id="readinessGauge"></canvas>
+                        </div>
+                        <div class="gauge-value">78%</div>
+                        <div class="gauge-label">Audit Readiness</div>
+                    </div>
+                    
+                    <h3 style="margin: 20px 0 12px; font-size: 16px;">Upcoming Audits</h3>
+                    <div class="audit-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-date">Nov 30, 2025</div>
+                            <div class="timeline-content upcoming">
+                                <strong>Internal Compliance Review</strong>
+                                <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                                    Scope: Financial Controls & Reporting
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">Jan 15, 2026</div>
+                            <div class="timeline-content upcoming">
+                                <strong>External Regulatory Audit</strong>
+                                <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                                    Regulator: Financial Services Authority
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">Mar 5, 2026</div>
+                            <div class="timeline-content upcoming">
+                                <strong>ISO 27001 Surveillance Audit</strong>
+                                <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                                    Auditor: Certification Body
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">Aug 20, 2025</div>
+                            <div class="timeline-content completed">
+                                <strong>Internal Policy Compliance Review</strong>
+                                <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                                    Status: Completed - 92% Compliance
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container" style="margin-top: 20px;">
+                        <div class="progress-header">
+                            <span class="progress-title">Pre-Audit Checklist Completion</span>
+                            <span class="progress-percent">65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill blue" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="last-updated">
+                <div class="blinking-dot"></div>
+                <span>Live Data - Updated 5 minutes ago</span>
+            </div>
+            <div>
+                <span>Compliance Task Executor Dashboard v2.1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis Modal -->
+    <div class="modal" id="analysisModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detailed Analysis & Recommendations</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="analysis-section">
+                <h4 class="analysis-section-title">Performance Overview</h4>
+                <div class="analysis-item">
+                    <span class="analysis-label">SLA Adherence Trend</span>
+                    <span class="analysis-value positive">+6% improvement</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Tasks Completed This Week</span>
+                    <span class="analysis-value">18/25 (72%)</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Average Completion Time</span>
+                    <span class="analysis-value negative">+1.2 days vs target</span>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <h4 class="analysis-section-title">Bottleneck Analysis</h4>
+                <div class="analysis-item">
+                    <span class="analysis-label">Legal Department Dependencies</span>
+                    <span class="analysis-value negative">3 delayed tasks</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Resource Constraints</span>
+                    <span class="analysis-value">2 high-priority tasks pending</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Process Inefficiencies</span>
+                    <span class="analysis-value negative">Manual reviews causing delays</span>
+                </div>
+            </div>
+            
+            <div class="recommendation">
+                <div class="recommendation-title">Recommended Actions</div>
+                <p>1. Escalate Task T-108 to Legal Team Head for priority review</p>
+                <p>2. Schedule a cross-functional meeting to resolve dependency bottlenecks</p>
+                <p>3. Implement automated review workflows for standard compliance tasks</p>
+                <p>4. Allocate additional resources to high-priority tasks due this week</p>
+            </div>
+            
+            <div class="analysis-section">
+                <h4 class="analysis-section-title">Predictive Insights</h4>
+                <p>Based on current trends, you're projected to complete 85% of monthly targets. Focus on reducing Legal dependency delays to improve to 92%.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize charts and functionality when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // View Toggle Functionality
+            const operationalViewBtn = document.getElementById('operationalViewBtn');
+            const auditReadinessBtn = document.getElementById('auditReadinessBtn');
+            const operationalView = document.getElementById('operationalView');
+            const auditReadinessView = document.getElementById('auditReadinessView');
+            
+            operationalViewBtn.addEventListener('click', function() {
+                operationalViewBtn.classList.add('active');
+                auditReadinessBtn.classList.remove('active');
+                operationalView.classList.add('active');
+                auditReadinessView.classList.remove('active');
+                document.body.style.setProperty('--accent-blue', '#3182CE');
+            });
+            
+            auditReadinessBtn.addEventListener('click', function() {
+                auditReadinessBtn.classList.add('active');
+                operationalViewBtn.classList.remove('active');
+                auditReadinessView.classList.add('active');
+                operationalView.classList.remove('active');
+                document.body.style.setProperty('--accent-blue', '#9C27B0');
+                
+                // Initialize audit readiness charts if not already initialized
+                if (!window.auditChartsInitialized) {
+                    initializeAuditCharts();
+                    window.auditChartsInitialized = true;
+                }
+            });
+
+            // Initialize operational charts
+            initializeOperationalCharts();
+            
+            // Initialize audit readiness charts
+            initializeAuditCharts();
+            window.auditChartsInitialized = true;
+        });
+
+        // Function to initialize operational charts
+        function initializeOperationalCharts() {
+            /*
+            // Due Dates Chart
+            const dueDatesCtx = document.getElementById('dueDatesChart').getContext('2d');
+            new Chart(dueDatesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 40', 'Week 41', 'Week 42', 'Week 43', 'Week 44', 'Week 45'],
+                    datasets: [{
+                        label: 'Tasks Due',
+                        data: [12, 15, 18, 14, 16, 10],
+                        borderColor: '#3182CE',
+                        backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Tasks Completed',
+                        data: [8, 10, 12, 9, 11, 8],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tasks Due vs Completed'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tasks'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // SLA Performance Chart
+            const slaPerformanceCtx = document.getElementById('slaPerformanceChart').getContext('2d');
+            new Chart(slaPerformanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jul-25', 'Aug-25', 'Sep-25', 'Oct-25', 'Nov-25', 'Dec-25'],
+                    datasets: [{
+                        label: 'SLA Adherence %',
+                        data: [85, 82, 88, 92, 90, 94],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'SLA Adherence Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'SLA Adherence %'
+                            }
+                        }
+                    }
+                }
+            });
+*/
+            // SLA Gauge Chart
+            const gaugeCtx = document.getElementById('slaGauge').getContext('2d');
+            new Chart(gaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['On Time', 'Delayed'],
+                    datasets: [{
+                        data: [92, 8],
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#F44336'
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Detailed Analysis Modal
+            // Detailed Analysis Modal
+            const viewDetailedAnalysis = document.getElementById('viewDetailedAnalysis');
+            const analysisModal = document.getElementById('analysisModal');
+            const closeModal = document.querySelector('.close-modal');
+            
+            viewDetailedAnalysis.addEventListener('click', function() {
+                analysisModal.style.display = 'flex';
+            });
+            
+            closeModal.addEventListener('click', function() {
+                analysisModal.style.display = 'none';
+            });
+            
+            analysisModal.addEventListener('click', function(e) {
+                if (e.target === analysisModal) {
+                    analysisModal.style.display = 'none';
+                }
+            });
+
+            // Add this JavaScript to make the calendar and tabs work
+
+            // Calendar View Toggle
+            const weekViewBtn = document.getElementById('weekViewBtn');
+            const monthViewBtn = document.getElementById('monthViewBtn');
+            const calendarView = document.getElementById('calendarView');
+
+            weekViewBtn.addEventListener('click', function() {
+                weekViewBtn.classList.add('btn-primary');
+                monthViewBtn.classList.remove('btn-primary');
+                renderWeekCalendar();
+            });
+
+            monthViewBtn.addEventListener('click', function() {
+                monthViewBtn.classList.add('btn-primary');
+                weekViewBtn.classList.remove('btn-primary');
+                renderMonthCalendar();
+            });
+
+            // Tab Functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    document.querySelectorAll('.chart-tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the selected tab content
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                });
+            });
+
+            // Function to render week calendar view
+            function renderWeekCalendar() {
+                const calendarView = document.getElementById('calendarView');
+                const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                const today = new Date();
+                const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                
+                // Adjust to start from Monday
+                const startDate = new Date(today);
+                startDate.setDate(today.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
+                
+                let calendarHTML = '<div class="calendar-view">';
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(startDate.getDate() + i);
+                    
+                    const isToday = date.toDateString() === today.toDateString();
+                    const dayTasks = getTasksForDate(date);
+                    
+                    calendarHTML += `
+                        <div class="calendar-day ${isToday ? 'today' : ''}">
+                            <div class="calendar-day-header">${daysOfWeek[i]} ${date.getDate()}</div>
+                            <div class="calendar-day-content">
+                                ${dayTasks.map(task => `
+                                    <div class="calendar-task ${task.priority}" title="${task.title}">${task.id}: ${task.title.substring(0, 10)}...</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                calendarHTML += '</div>';
+                calendarView.innerHTML = calendarHTML;
+            }
+
+            // Function to render month calendar view
+            function renderMonthCalendar() {
+                const calendarView = document.getElementById('calendarView');
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                
+                // Get first day of month and number of days in month
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                
+                // Determine day of week for first day (0 = Sunday, 1 = Monday, etc.)
+                let firstDayOfWeek = firstDay.getDay();
+                // Adjust to start from Monday
+                firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+                
+                let calendarHTML = '<div class="calendar-view">';
+                
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    calendarHTML += '<div class="calendar-day empty"></div>';
+                }
+                
+                // Add cells for each day of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const isToday = date.toDateString() === today.toDateString();
+                    const dayTasks = getTasksForDate(date);
+                    
+                    calendarHTML += `
+                        <div class="calendar-day ${isToday ? 'today' : ''}">
+                            <div class="calendar-day-header">${day}</div>
+                            <div class="calendar-day-content">
+                                ${dayTasks.map(task => `
+                                    <div class="calendar-task ${task.priority}" title="${task.title}">${task.id}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                calendarHTML += '</div>';
+                calendarView.innerHTML = calendarHTML;
+            }
+
+            // Function to get tasks for a specific date (mock data)
+            function getTasksForDate(date) {
+                const tasks = [
+                    { id: 'T-115', title: 'Submit Quarterly Compliance Report', priority: 'high', date: new Date() },
+                    { id: 'T-114', title: 'Review Vendor Contracts', priority: 'high', date: new Date() },
+                    { id: 'T-108', title: 'Update Data Privacy Policy', priority: 'medium', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) },
+                    { id: 'T-102', title: 'Annual Regulatory Filing', priority: 'high', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
+                    { id: 'T-097', title: 'Employee Policy Collection', priority: 'medium', date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) },
+                    { id: 'T-089', title: 'Internal Control Testing', priority: 'low', date: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000) }
+                ];
+                
+                return tasks.filter(task => {
+                    return task.date.toDateString() === date.toDateString();
+                });
+            }
+
+            // Render initial calendar view
+            renderWeekCalendar();
+
+            // Add this JavaScript to initialize the charts for the tabs
+
+            // Due Dates Chart
+            
+            const dueDatesCtx = document.getElementById('dueDatesChart').getContext('2d');
+            new Chart(dueDatesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 40', 'Week 41', 'Week 42', 'Week 43', 'Week 44', 'Week 45'],
+                    datasets: [{
+                        label: 'Tasks Due',
+                        data: [12, 15, 18, 14, 16, 10],
+                        borderColor: '#3182CE',
+                        backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Tasks Completed',
+                        data: [8, 10, 12, 9, 11, 8],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tasks Due vs Completed'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tasks'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // SLA Performance Chart
+            const slaPerformanceCtx = document.getElementById('slaPerformanceChart').getContext('2d');
+            new Chart(slaPerformanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jul-25', 'Aug-25', 'Sep-25', 'Oct-25', 'Nov-25', 'Dec-25'],
+                    datasets: [{
+                        label: 'SLA Adherence %',
+                        data: [85, 82, 88, 92, 90, 94],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'SLA Adherence Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'SLA Adherence %'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Dependency Network Visualization
+            function renderDependencyNetwork() {
+                const networkContainer = document.getElementById('dependencyNetwork');
+                
+                // Sample dependency data
+                const dependencies = [
+                    { id: 'T-115', name: 'Qtr Report', x: 100, y: 50, dependencies: ['T-108'] },
+                    { id: 'T-108', name: 'Data Policy', x: 250, y: 50, dependencies: ['T-114'] },
+                    { id: 'T-114', name: 'Vendor Review', x: 400, y: 50, dependencies: [] },
+                    { id: 'T-102', name: 'Regulatory Filing', x: 100, y: 120, dependencies: [] },
+                    { id: 'T-097', name: 'Policy Collection', x: 250, y: 120, dependencies: ['T-108'] },
+                    { id: 'T-089', name: 'Control Testing', x: 400, y: 120, dependencies: ['T-097'] }
+                ];
+                
+                // Draw connections first (so they appear behind nodes)
+                let connectionsHTML = '';
+                dependencies.forEach(task => {
+                    task.dependencies.forEach(depId => {
+                        const depTask = dependencies.find(t => t.id === depId);
+                        if (depTask) {
+                            connectionsHTML += `
+                                <div class="network-connection" style="
+                                    width: ${Math.sqrt(Math.pow(depTask.x - task.x, 2) + Math.pow(depTask.y - task.y, 2))}px;
+                                    left: ${task.x}px;
+                                    top: ${task.y + 20}px;
+                                    transform: rotate(${Math.atan2(depTask.y - task.y, depTask.x - task.x)}rad);
+                                    transform-origin: 0 0;
+                                "></div>
+                            `;
+                        }
+                    });
+                });
+                
+                // Draw nodes
+                let nodesHTML = '';
+                dependencies.forEach(task => {
+                    nodesHTML += `
+                        <div class="network-node" style="left: ${task.x}px; top: ${task.y}px;">
+                            ${task.name}
+                        </div>
+                    `;
+                });
+                
+                networkContainer.innerHTML = connectionsHTML + nodesHTML;
+                
+                // Add click events to nodes
+                networkContainer.querySelectorAll('.network-node').forEach(node => {
+                    node.addEventListener('click', function() {
+                        const taskName = this.textContent;
+                        alert(`Showing details for task: ${taskName}`);
+                    });
+                });
+            }
+
+            // Render dependency network
+            renderDependencyNetwork();
+        }
+
+        // Function to initialize audit readiness charts
+        function initializeAuditCharts() {
+            // Compliance Trend Chart
+            const complianceTrendCtx = document.getElementById('complianceTrendChart').getContext('2d');
+            new Chart(complianceTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025', 'Q2 2025', 'Q3 2025'],
+                    datasets: [{
+                        label: 'Compliance Score',
+                        data: [72, 75, 78, 82, 85, 84, 87],
+                        borderColor: '#9C27B0',
+                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compliance Score Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Compliance Score %'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Findings by Category Chart
+            const findingsCategoryCtx = document.getElementById('findingsByCategoryChart').getContext('2d');
+            new Chart(findingsCategoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Data Privacy', 'Access Control', 'Documentation', 'Vendor Mgmt', 'Training'],
+                    datasets: [{
+                        label: 'Open Findings',
+                        data: [3, 4, 2, 2, 1],
+                        backgroundColor: [
+                            'rgba(244, 67, 54, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(33, 150, 243, 0.7)',
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(156, 39, 176, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Open Findings by Category'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Findings'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Remediation Progress Chart
+            const remediationCtx = document.getElementById('remediationProgressChart').getContext('2d');
+            new Chart(remediationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'Not Started'],
+                    datasets: [{
+                        data: [35, 45, 20],
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#FFC107',
+                            '#F44336'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Remediation Progress'
+                        }
+                    }
+                }
+            });
+
+            // Evidence Status Chart
+            const evidenceCtx = document.getElementById('evidenceStatusChart').getContext('2d');
+            new Chart(evidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Policy Docs', 'Control Tests', 'Training Records', 'Incident Reports', 'Risk Assessments'],
+                    datasets: [{
+                        label: 'Completion %',
+                        data: [100, 75, 60, 90, 85],
+                        backgroundColor: 'rgba(33, 150, 243, 0.7)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evidence Collection Status'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Completion %'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Readiness Gauge Chart
+            const readinessCtx = document.getElementById('readinessGauge').getContext('2d');
+            new Chart(readinessCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ready', 'Not Ready'],
+                    datasets: [{
+                        data: [78, 22],
+                        backgroundColor: [
+                            '#4CAF50',
+                            '#F44336'
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    
+    
+    </script>
+</body>
+</html>

@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1A3A5F;
+            --secondary-blue: #2C5282;
+            --accent-blue: #3182CE;
+            --light-bg: #F4F6F8;
+            --white: #FFFFFF;
+            --green: #43A047;
+            --orange: #FB8C00;
+            --red: #E53935;
+            --teal: #26A69A;
+            --amber: #FBC02D;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --border-color: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-title i {
+            color: var(--accent-blue);
+        }
+
+        .filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: var(--white);
+        }
+
+        /* KPI Cards */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            background-color: #e9eded;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, var(--white) 0%, #f8fafc 100%);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-card.maturity {
+            border-left-color: var(--teal);
+        }
+
+        .kpi-card.risk {
+            border-left-color: var(--red);
+        }
+
+        .kpi-card.cost {
+            border-left-color: var(--amber);
+        }
+
+        .kpi-card.savings {
+            border-left-color: var(--green);
+        }
+
+        .kpi-card.regulatory {
+            border-left-color: var(--orange);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-title {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+            border-bottom: 3px solid #e4dcf6; /* bottom border line */
+        }
+
+        .kpi-icon {
+            font-size: 20px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up {
+            color: var(--green);
+        }
+
+        .trend-down {
+            color: var(--red);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            background-color: var(--white);
+        }
+
+        th:hover {
+            background-color: var(--light-bg);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-critical {
+            background-color: rgba(229, 57, 53, 0.1);
+            color: var(--red);
+        }
+
+        .status-high {
+            background-color: rgba(251, 140, 0, 0.1);
+            color: var(--orange);
+        }
+
+        .status-moderate {
+            background-color: rgba(251, 192, 45, 0.1);
+            color: var(--amber);
+        }
+
+        .status-low {
+            background-color: rgba(67, 160, 71, 0.1);
+            color: var(--green);
+        }
+
+        /* Gauge Chart Container */
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gauge-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: -40px;
+            margin-bottom: 10px;
+        }
+
+        .gauge-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Heatmap Styles */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .heatmap-cell {
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+        }
+
+        .heatmap-cell.high-risk {
+            background-color: rgba(229, 57, 53, 0.7);
+            color: white;
+        }
+
+        .heatmap-cell.medium-risk {
+            background-color: rgba(251, 140, 0, 0.7);
+            color: white;
+        }
+
+        .heatmap-cell.low-risk {
+            background-color: rgba(67, 160, 71, 0.7);
+            color: white;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            grid-column: 1 / -1;
+        }
+
+        .insights-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .insights-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .insights-content {
+            background-color: rgba(49, 130, 206, 0.05);
+            padding: 16px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        /* Tab Container */
+        .tab-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            transition: background-color 0.2s;
+        }
+
+        .tab:hover {
+            background-color: var(--border-color);
+        }
+
+        .tab.active {
+            background-color: var(--accent-blue);
+            color: var(--white);
+        }
+
+        /* Department Cards */
+        .department-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+            background-color: #dadedc;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-bottom: 10px;
+        }
+
+        .department-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .department-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .department-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .department-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e4dcf6; /* bottom border line */
+        }
+
+        .department-icon {
+            font-size: 20px;
+            color: var(--accent-blue);
+        }
+
+        .department-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .metric-value.positive {
+            color: var(--green);
+        }
+
+        .metric-value.negative {
+            color: var(--red);
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-light);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .last-updated {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .blinking-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--green);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Drilldown View */
+        .drilldown-view {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .drilldown-view.active {
+            display: block;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        /* Chart Tab Content */
+        .chart-tab-content {
+            display: none;
+        }
+
+        .chart-tab-content.active {
+            display: block;
+        }
+
+        .vertical-divider {
+            width: 1px;
+            background-color: #c8c5c5;
+            margin: 0 20px;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header with Filters -->
+        <div class="header">
+            <h1 class="dashboard-title">
+                <i class="fas fa-shield-alt"></i> Enterprise Command Center
+            </h1>
+            <div class="filters">
+                <div class="filter-item">
+                    <span class="filter-label">Time Period</span>
+                    <select id="timePeriod">
+                        <option>Last Quarter</option>
+                        <option selected>Current Quarter</option>
+                        <option>Last Year</option>
+                        <option>Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">Entity/Region</span>
+                    <select id="entityRegion">
+                        <option>All Entities</option>
+                        <option>North America</option>
+                        <option>Europe</option>
+                        <option>Asia Pacific</option>
+                        <option>Latin America</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">Department</span>
+                    <select id="departmentFilter">
+                        <option>All Departments</option>
+                        <option>Finance</option>
+                        <option>IT</option>
+                        <option>HR</option>
+                        <option>Legal</option>
+                        <option>Operations</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">Risk Level</span>
+                    <select id="riskLevel">
+                        <option>All Levels</option>
+                        <option>Critical</option>
+                        <option>High</option>
+                        <option>Moderate</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights Panel -->
+        <div class="insights-panel" style="background-color: #dadedc; padding-top: 10px; padding-bottom: 10px;">
+            <div class="insights-header">
+                <i class="fas fa-robot"></i>
+                <h3 class="insights-title">Strategic Insights & Recommendations</h3>
+            </div>
+            <div class="insights-content">
+                <p class="insight-text">
+                    Finance department maturity improved by 8% QoQ, but Legal remains high-risk in regulatory changes. 
+                    Automation ROI highest in IT at 50% – 2x industry average. Consider expanding automation initiatives to Finance and HR.
+                </p>
+                <p class="insight-text">
+                    Overall compliance cost is 12% under budget, with IT showing highest savings. 
+                    Action closure rates improved to 92% in September, exceeding target by 7%.
+                </p>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-section">
+            <div class="kpi-card maturity">
+                <div class="kpi-header">
+                    <span class="kpi-title">Org Maturity Score</span>
+                    <span class="kpi-icon"><i class="fas fa-chart-line"></i></span>
+                </div>
+                <div class="kpi-value">82%</div>
+                <div class="kpi-trend trend-up">
+                    <span>↑ 5%</span>
+                    <span>vs last quarter</span>
+                </div>
+            </div>
+            <div class="kpi-card risk">
+                <div class="kpi-header">
+                    <span class="kpi-title">Open Risks</span>
+                    <span class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                </div>
+                <div class="kpi-value">18</div>
+                <div class="kpi-trend trend-down">
+                    <span>↓ 3</span>
+                    <span>vs last month</span>
+                </div>
+            </div>
+            <div class="kpi-card cost">
+                <div class="kpi-header">
+                    <span class="kpi-title">Cost vs Budget</span>
+                    <span class="kpi-icon"><i class="fas fa-money-bill-wave"></i></span>
+                </div>
+                <div class="kpi-value">-12%</div>
+                <div class="kpi-trend trend-up">
+                    <span>Under budget</span>
+                </div>
+            </div>
+            <div class="kpi-card savings">
+                <div class="kpi-header">
+                    <span class="kpi-title">Automation Savings</span>
+                    <span class="kpi-icon"><i class="fas fa-robot"></i></span>
+                </div>
+                <div class="kpi-value">₹13.5L</div>
+                <div class="kpi-trend trend-up">
+                    <span>↑ 22%</span>
+                    <span>vs last quarter</span>
+                </div>
+            </div>
+            <div class="kpi-card regulatory">
+                <div class="kpi-header">
+                    <span class="kpi-title">Regulatory Updates</span>
+                    <span class="kpi-icon"><i class="fas fa-gavel"></i></span>
+                </div>
+                <div class="kpi-value">7</div>
+                <div class="kpi-trend trend-up">
+                    <span>↑ 2</span>
+                    <span>this quarter</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Cards -->
+        <div class="department-cards">
+            <div class="department-card" data-dept="finance">
+                <div class="department-header">
+                    <span class="department-name">Finance</span>
+                    <span class="department-icon"><i class="fas fa-chart-pie"></i></span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Maturity Score</span>
+                    <span class="metric-value positive">78%</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Risk Level</span>
+                    <span class="metric-value negative">High</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Cost (₹)</span>
+                    <span class="metric-value">10.0L</span>
+                </div>
+            </div>
+            <div class="department-card" data-dept="it">
+                <div class="department-header">
+                    <span class="department-name">IT</span>
+                    <span class="department-icon"><i class="fas fa-server"></i></span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Maturity Score</span>
+                    <span class="metric-value positive">85%</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Risk Level</span>
+                    <span class="metric-value">Moderate</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Cost (₹)</span>
+                    <span class="metric-value">12.0L</span>
+                </div>
+            </div>
+            <div class="department-card" data-dept="hr">
+                <div class="department-header">
+                    <span class="department-name">HR</span>
+                    <span class="department-icon"><i class="fas fa-users"></i></span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Maturity Score</span>
+                    <span class="metric-value negative">69%</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Risk Level</span>
+                    <span class="metric-value">Moderate</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Cost (₹)</span>
+                    <span class="metric-value">6.0L</span>
+                </div>
+            </div>
+            <div class="department-card" data-dept="legal">
+                <div class="department-header">
+                    <span class="department-name">Legal</span>
+                    <span class="department-icon"><i class="fas fa-balance-scale"></i></span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Maturity Score</span>
+                    <span class="metric-value">77%</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Risk Level</span>
+                    <span class="metric-value negative">High</span>
+                </div>
+                <div class="department-metric">
+                    <span class="metric-label">Cost (₹)</span>
+                    <span class="metric-value">8.0L</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel - Maturity & Risk -->
+            <div class="panel" style="background-color: #e8e4e4;">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-chart-radar"></i> Compliance Maturity Index
+                    </h2>
+                    <div class="panel-actions">
+                        <button class="btn">Export</button>
+                        <button class="btn btn-primary">Drill Down</button>
+                    </div>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tab active" data-tab="maturityOverview">Maturity Overview</div>
+                    <div class="tab" data-tab="departmentMaturity">Department Maturity</div>
+                </div>
+                
+                <div class="chart-tab-content active" id="maturityOverview-tab">
+                    <div class="dashboard-layout">
+                        <div class="gauge-container">
+                            <div class="chart-container">
+                                <canvas id="maturityGauge"></canvas>
+                            </div>
+                            <div class="gauge-value">82%</div>
+                            <div class="gauge-label">Overall Maturity Score</div>
+                        </div>
+                        <div class="vertical-divider"></div>
+                        <div class="chart-container">
+                            <canvas id="maturityRadar"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-tab-content" id="departmentMaturity-tab">
+                    <div class="chart-container">
+                        <canvas id="departmentMaturityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Risk Heatmap -->
+            <div class="panel" style="background-color: #e9eded;">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-fire"></i> Departmental Risk Heatmap
+                    </h2>
+                    <div class="panel-actions">
+                        <button class="btn">Filter</button>
+                        <button class="btn btn-primary">Risk Report</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="riskHeatmap"></canvas>
+                </div>
+                
+                <div class="heatmap-container">
+                    <div class="heatmap-cell high-risk">
+                        <div>Finance</div>
+                        <div>Critical Risk</div>
+                    </div>
+                    <div class="heatmap-cell medium-risk">
+                        <div>IT</div>
+                        <div>High Risk</div>
+                    </div>
+                    <div class="heatmap-cell low-risk">
+                        <div>HR</div>
+                        <div>Moderate Risk</div>
+                    </div>
+                    <div class="heatmap-cell high-risk">
+                        <div>Legal</div>
+                        <div>Critical Risk</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Panel - Cost vs Automation -->
+            <div class="panel" style="background-color: #e8e4e4;">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-money-bill-trend-up"></i> Compliance Cost vs Automation Benefit
+                    </h2>
+                    <div class="panel-actions">
+                        <button class="btn">Export</button>
+                        <button class="btn btn-primary">ROI Analysis</button>
+                    </div>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tab active" data-tab="costBreakdown">Cost Breakdown</div>
+                    <div class="tab" data-tab="automationROI">Automation ROI</div>
+                </div>
+                
+                <div class="chart-tab-content active" id="costBreakdown-tab">
+                    <div class="chart-container">
+                        <canvas id="costWaterfall"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-tab-content" id="automationROI-tab">
+                    <div class="chart-container">
+                        <canvas id="automationROIChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Action Closure Trends -->
+            <div class="panel" style="background-color: #e9eded;">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-tasks"></i> Action Closure Trend Dashboard
+                    </h2>
+                    <div class="panel-actions">
+                        <button class="btn">Filter</button>
+                        <button class="btn btn-primary">Export</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="closureTrendChart"></canvas>
+                </div>
+                
+                <div class="table-container" style="background-color: #e8e4e4;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Total Actions</th>
+                                <th>Closed</th>
+                                <th>Overdue</th>
+                                <th>Closure %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Finance</td>
+                                <td>65</td>
+                                <td>55</td>
+                                <td>8</td>
+                                <td>85%</td>
+                            </tr>
+                            <tr>
+                                <td>IT</td>
+                                <td>72</td>
+                                <td>68</td>
+                                <td>2</td>
+                                <td>94%</td>
+                            </tr>
+                            <tr>
+                                <td>HR</td>
+                                <td>48</td>
+                                <td>40</td>
+                                <td>5</td>
+                                <td>83%</td>
+                            </tr>
+                            <tr>
+                                <td>Legal</td>
+                                <td>55</td>
+                                <td>50</td>
+                                <td>3</td>
+                                <td>91%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regulation Impact Panel -->
+        <div class="panel" style="grid-column: 1 / -1; background-color: #e8e4e4;">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i class="fas fa-project-diagram"></i> Regulatory Change Impact Map
+                </h2>
+                <div class="panel-actions">
+                    <button class="btn">Filter</button>
+                    <button class="btn btn-primary">Impact Analysis</button>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="background-color: #e9eded;">
+                <canvas id="regulationImpactChart"></canvas>
+            </div>
+            
+            <div class="table-container" style="background-color: #e9eded;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Regulation ID</th>
+                            <th>Title</th>
+                            <th>Impacted Departments</th>
+                            <th># of Policies Impacted</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>REG-2025-04</td>
+                            <td>Data Protection Amendment</td>
+                            <td>IT, HR, Legal</td>
+                            <td>12</td>
+                            <td><span class="status-badge status-high">Under Review</span></td>
+                        </tr>
+                        <tr>
+                            <td>REG-2025-07</td>
+                            <td>ESG Compliance Rule</td>
+                            <td>Finance, Procurement</td>
+                            <td>8</td>
+                            <td><span class="status-badge status-low">Implemented</span></td>
+                        </tr>
+                        <tr>
+                            <td>REG-2025-09</td>
+                            <td>Anti-Money Laundering Update</td>
+                            <td>Finance</td>
+                            <td>5</td>
+                            <td><span class="status-badge status-moderate">Pending Action</span></td>
+                        </tr>
+                        <tr>
+                            <td>REG-2025-11</td>
+                            <td>Cybersecurity Framework</td>
+                            <td>IT, Legal</td>
+                            <td>10</td>
+                            <td><span class="status-badge status-high">Under Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="last-updated">
+                <div class="blinking-dot"></div>
+                <span>Live Data - Updated 5 minutes ago</span>
+            </div>
+            <div>
+                <span>Enterprise Compliance Command Center v3.0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Maturity Gauge Chart
+            const maturityGaugeCtx = document.getElementById('maturityGauge').getContext('2d');
+            new Chart(maturityGaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mature', 'Remaining'],
+                    datasets: [{
+                        data: [82, 18],
+                        backgroundColor: [
+                            '#26A69A',
+                            '#E2E8F0'
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Maturity Radar Chart
+            const maturityRadarCtx = document.getElementById('maturityRadar').getContext('2d');
+            new Chart(maturityRadarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Awareness', 'Execution', 'Monitoring', 'Automation', 'Governance'],
+                    datasets: [
+                        {
+                            label: 'Finance',
+                            data: [85, 78, 80, 72, 75],
+                            backgroundColor: 'rgba(49, 130, 206, 0.2)',
+                            borderColor: '#3182CE',
+                            pointBackgroundColor: '#3182CE',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#3182CE'
+                        },
+                        {
+                            label: 'IT',
+                            data: [90, 82, 88, 80, 85],
+                            backgroundColor: 'rgba(67, 160, 71, 0.2)',
+                            borderColor: '#43A047',
+                            pointBackgroundColor: '#43A047',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#43A047'
+                        },
+                        {
+                            label: 'HR',
+                            data: [75, 70, 68, 60, 72],
+                            backgroundColor: 'rgba(251, 140, 0, 0.2)',
+                            borderColor: '#FB8C00',
+                            pointBackgroundColor: '#FB8C00',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#FB8C00'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Department Maturity Chart
+            const departmentMaturityCtx = document.getElementById('departmentMaturityChart').getContext('2d');
+            new Chart(departmentMaturityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'HR', 'Legal', 'Operations'],
+                    datasets: [{
+                        label: 'Maturity Score %',
+                        data: [78, 85, 69, 77, 72],
+                        backgroundColor: [
+                            'rgba(49, 130, 206, 0.7)',
+                            'rgba(67, 160, 71, 0.7)',
+                            'rgba(251, 140, 0, 0.7)',
+                            'rgba(156, 39, 176, 0.7)',
+                            'rgba(33, 150, 243, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Department-wise Maturity Scores'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Maturity Score %'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Risk Heatmap
+            const riskHeatmapCtx = document.getElementById('riskHeatmap').getContext('2d');
+            new Chart(riskHeatmapCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'HR', 'Legal', 'Operations'],
+                    datasets: [{
+                        label: 'Risk Level',
+                        data: [85, 65, 45, 80, 55],
+                        backgroundColor: [
+                            'rgba(229, 57, 53, 0.7)',
+                            'rgba(251, 140, 0, 0.7)',
+                            'rgba(67, 160, 71, 0.7)',
+                            'rgba(229, 57, 53, 0.7)',
+                            'rgba(251, 192, 45, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Departmental Risk Levels'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risk Score'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Cost Waterfall Chart
+            const costWaterfallCtx = document.getElementById('costWaterfall').getContext('2d');
+            new Chart(costWaterfallCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tools', 'Manpower', 'Training', 'Consulting', 'Penalties', 'Total'],
+                    datasets: [{
+                        label: 'Cost (₹ Lakhs)',
+                        data: [25, 18, 8, 12, 5, 68],
+                        backgroundColor: [
+                            'rgba(49, 130, 206, 0.7)',
+                            'rgba(49, 130, 206, 0.7)',
+                            'rgba(49, 130, 206, 0.7)',
+                            'rgba(49, 130, 206, 0.7)',
+                            'rgba(229, 57, 53, 0.7)',
+                            'rgba(26, 166, 154, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compliance Cost Breakdown'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cost (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Automation ROI Chart
+            const automationROICtx = document.getElementById('automationROIChart').getContext('2d');
+            new Chart(automationROICtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'HR', 'Legal'],
+                    datasets: [
+                        {
+                            label: 'Compliance Cost (₹ Lakhs)',
+                            data: [10, 12, 6, 8],
+                            backgroundColor: 'rgba(49, 130, 206, 0.7)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Automation Savings (₹ Lakhs)',
+                            data: [2.5, 6, 1, 4],
+                            backgroundColor: 'rgba(67, 160, 71, 0.7)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Compliance Cost vs Automation Savings'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Closure Trend Chart
+            const closureTrendCtx = document.getElementById('closureTrendChart').getContext('2d');
+            new Chart(closureTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jul-25', 'Aug-25', 'Sep-25', 'Oct-25', 'Nov-25', 'Dec-25'],
+                    datasets: [{
+                        label: 'Closure Rate %',
+                        data: [82, 88, 92, 90, 87, 85],
+                        borderColor: '#26A69A',
+                        backgroundColor: 'rgba(38, 166, 154, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Action Closure Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Closure Rate %'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Regulation Impact Chart
+            const regulationImpactCtx = document.getElementById('regulationImpactChart').getContext('2d');
+            new Chart(regulationImpactCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Data Protection', 'ESG Compliance', 'AML Update', 'Cybersecurity'],
+                    datasets: [{
+                        label: 'Policies Impacted',
+                        data: [12, 8, 5, 10],
+                        backgroundColor: [
+                            'rgba(229, 57, 53, 0.7)',
+                            'rgba(251, 140, 0, 0.7)',
+                            'rgba(251, 192, 45, 0.7)',
+                            'rgba(49, 130, 206, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Regulatory Impact by Policy Area'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Policies Impacted'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    const panel = this.closest('.panel');
+                    
+                    // Remove active class from all tabs in the same panel
+                    panel.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents in the panel
+                    panel.querySelectorAll('.chart-tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the selected tab content
+                    const tabContent = panel.querySelector(`#${tabName}-tab`);
+                    if (tabContent) {
+                        tabContent.classList.add('active');
+                    }
+                });
+            });
+
+            // Department card interactions
+            const departmentCards = document.querySelectorAll('.department-card');
+            departmentCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const dept = this.getAttribute('data-dept');
+                    alert(`Drilling down to ${dept.toUpperCase()} department details`);
+                    // In a real application, this would filter all charts and show department-specific data
+                });
+            });
+
+            // Filter functionality
+            const filters = document.querySelectorAll('select');
+            filters.forEach(filter => {
+                filter.addEventListener('change', updateDashboard);
+            });
+
+            function updateDashboard() {
+                // In a real application, this would fetch new data based on filters
+                console.log('Updating dashboard with new filters...');
+            }
+        });
+    </script>
+</body>
+</html>

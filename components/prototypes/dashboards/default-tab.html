@@ -1,0 +1,37 @@
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* ADD THIS LINE */
+    }
+
+    .frame-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #7f8c8d;
+        text-align: center;
+        padding: 20px;
+        position: absolute; /* Change to absolute positioning */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--light-bg);
+        z-index: 1; /* Ensure it's above the iframe */
+    }
+
+
+</style>
+<div class="frame-placeholder" id="placeholder">
+    <i class="fas fa-chart-pie"></i>
+    <h3>Dashboard Portal</h3>
+    <p>Select a role from above to load the corresponding dashboard</p>
+</div>

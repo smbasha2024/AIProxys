@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Heads Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        :root {
+            --primary-color: #1a5276;
+            --secondary-color: #2874a6;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #3498db;
+            --light-bg: #f8f9fa;
+            --filter-bg: #e8f4f8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #313132, #313132);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-title {
+            font-size: 1.1rem;
+            color: #01182c;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e4dcf6; /* bottom border line */
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .trend-up {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .trend-down {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #b6b6b7; /* bottom border line */
+        }
+        
+        .chart-wrapper {
+            flex: none;
+            position: relative;
+            height: 50vh;
+            width: 40vw;
+            padding-left: 5px;
+        }
+        
+        .filter-section {
+            background: var(--filter-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid #c5e3ec;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-compliant {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: #196F3D;
+        }
+        
+        .status-warning {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #9C6400;
+        }
+        
+        .status-critical {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #922B21;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .department-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .finance { background-color: #E8F6F3; color: #1D8348; }
+        .it { background-color: #EBF5FB; color: #2874A6; }
+        .production { background-color: #FEF9E7; color: #9A7D0A; }
+        .hr { background-color: #F4ECF7; color: #6C3483; }
+        .legal { background-color: #FDEDEC; color: #A93226; }
+        .procurement { background-color: #EAF2F8; color: #2E86C1; }
+        
+        .heatmap-cell {
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .heatmap-high {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: #196F3D;
+        }
+        
+        .heatmap-medium {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #9C6400;
+        }
+        
+        .heatmap-low {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #922B21;
+        }
+        
+        .progress-thin {
+            height: 8px;
+        }
+        
+        .alert-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .alert-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            border-bottom: 3px solid var(--secondary-color);
+            background-color:#e6e9eb
+        }
+        
+        .tab-content {
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="h3 mb-0">Department Heads Dashboard</h1>
+                    <p class="mb-0 opacity-75">Performance, cost, and accountability tracking for department heads</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group" id="timeFilter">
+                        <button class="btn btn-sm btn-outline-light" data-period="monthly">Monthly</button>
+                        <button class="btn btn-sm btn-outline-light active" data-period="quarterly">Quarterly</button>
+                        <button class="btn btn-sm btn-outline-light" data-period="yearly">Yearly</button>
+                    </div>
+                    <span class="mx-2 text-light">|</span>
+                    <span class="text-light">Q3 FY25 | Last updated: Today</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Alerts Panel -->
+        <div class="alert alert-warning d-flex align-items-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <div>
+                <strong>Alerts:</strong> 2 tasks delayed >7 days (IT, Legal). 1 audit finding overdue (Finance). 3 cross-department dependencies pending.
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Compliance Tasks Closed</div>
+                    <div class="kpi-value">92%</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        +4% vs Last Month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Avg Delay (Days)</div>
+                    <div class="kpi-value">3.2</div>
+                    <div class="trend-indicator trend-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                        </svg>
+                        -1.1 vs Last Month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Non-Compliance Cost</div>
+                    <div class="kpi-value">₹ 2.5 L</div>
+                    <div class="trend-indicator trend-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                        </svg>
+                        -10% vs Last Month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Audit Findings Open</div>
+                    <div class="kpi-value">4</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        +2 vs Last Month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Cross-Dept Dependencies</div>
+                    <div class="kpi-value">6</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        +1 vs Last Month
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="kpi-card">
+                    <div class="kpi-title">Tasks Assigned</div>
+                    <div class="kpi-value">142</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        +12 vs Last Month
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" id="department">
+                        <option selected>All Departments</option>
+                        <option>Finance</option>
+                        <option>IT</option>
+                        <option>Production</option>
+                        <option>HR</option>
+                        <option>Legal</option>
+                        <option>Procurement</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="timePeriod">
+                        <option>Last 30 Days</option>
+                        <option selected>Last Quarter</option>
+                        <option>Last 6 Months</option>
+                        <option>Year to Date</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Task Status</label>
+                    <select class="form-select" id="taskStatus">
+                        <option selected>All Status</option>
+                        <option>Completed</option>
+                        <option>Pending</option>
+                        <option>Delayed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Cost Range</label>
+                    <select class="form-select" id="costRange">
+                        <option selected>All Costs</option>
+                        <option>Under ₹50K</option>
+                        <option>₹50K - ₹1L</option>
+                        <option>Above ₹1L</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departmental Compliance Scorecard -->
+        <div class="row g-3 mb-4" style="background-color: #e8e4e4;">
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Departmental Compliance Performance</div>
+                    <div class="chart-wrapper">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Monthly Compliance Adherence</div>
+                    <div class="chart-wrapper">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>Jan</th>
+                                    <th>Feb</th>
+                                    <th>Mar</th>
+                                    <th>Apr</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="department-tag finance">Finance</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">95%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">96%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">94%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">97%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag it">IT</span></td>
+                                    <td><span class="heatmap-cell heatmap-medium">85%</span></td>
+                                    <td><span class="heatmap-cell heatmap-medium">82%</span></td>
+                                    <td><span class="heatmap-cell heatmap-low">78%</span></td>
+                                    <td><span class="heatmap-cell heatmap-medium">84%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag production">Production</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">92%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">91%</span></td>
+                                    <td><span class="heatmap-cell heatmap-medium">88%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">93%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="department-tag hr">HR</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">94%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">96%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">95%</span></td>
+                                    <td><span class="heatmap-cell heatmap-high">97%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost of Compliance & Action Analytics -->
+        <div class="row g-3 mb-4" style="background-color: #e8e4e4;">
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Cost of Compliance by Department</div>
+                    <div class="chart-wrapper">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Task Closure vs Delay Trend</div>
+                    <div class="chart-wrapper">
+                        <canvas id="closureTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Closure & Delay Analytics -->
+        <div class="row g-3 mb-4" style="background-color: #e8e4e4;">
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Delay Root Cause Analysis</div>
+                    <div class="chart-wrapper">
+                        <canvas id="delayCauseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Top Delayed Tasks</div>
+                    <div class="chart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Task ID</th>
+                                        <th>Department</th>
+                                        <th>Owner</th>
+                                        <th>Dependency</th>
+                                        <th>Delay (Days)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>C-101</td>
+                                        <td><span class="department-tag it">IT</span></td>
+                                        <td>Anil</td>
+                                        <td>Legal</td>
+                                        <td>7</td>
+                                        <td><span class="status-badge status-critical">Critical</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>C-102</td>
+                                        <td><span class="department-tag finance">Finance</span></td>
+                                        <td>Meera</td>
+                                        <td>HR</td>
+                                        <td>3</td>
+                                        <td><span class="status-badge status-warning">Warning</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>C-103</td>
+                                        <td><span class="department-tag legal">Legal</span></td>
+                                        <td>Priya</td>
+                                        <td>-</td>
+                                        <td>5</td>
+                                        <td><span class="status-badge status-critical">Critical</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>C-104</td>
+                                        <td><span class="department-tag production">Production</span></td>
+                                        <td>Rahul</td>
+                                        <td>IT</td>
+                                        <td>2</td>
+                                        <td><span class="status-badge status-warning">Warning</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>C-105</td>
+                                        <td><span class="department-tag hr">HR</span></td>
+                                        <td>Raj</td>
+                                        <td>-</td>
+                                        <td>0</td>
+                                        <td><span class="status-badge status-compliant">On Track</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internal Audit & Cross-Functional Insights -->
+        <div class="row g-3" style="background-color: #e8e4e4;">
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Open Audit Findings by Department</div>
+                    <div class="chart-wrapper">
+                        <canvas id="auditFindingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Cross-Department Dependencies</div>
+                    <div class="chart-wrapper">
+                        <div class="alert-panel">
+                            <div class="alert-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>IT → Legal</span>
+                                    <span class="badge bg-warning">Pending</span>
+                                </div>
+                                <small class="text-muted">Data Privacy Policy Review</small>
+                            </div>
+                            <div class="alert-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>Finance → HR</span>
+                                    <span class="badge bg-warning">Pending</span>
+                                </div>
+                                <small class="text-muted">Payroll Compliance Sign-off</small>
+                            </div>
+                            <div class="alert-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>Production → IT</span>
+                                    <span class="badge bg-warning">Pending</span>
+                                </div>
+                                <small class="text-muted">Safety System Integration</small>
+                            </div>
+                            <div class="alert-item">
+                                <div class="d-flex justify-content-between">
+                                    <span>Legal → Finance</span>
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                                <small class="text-muted">Contract Compliance Review</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis Section -->
+        <div class="row mt-4" style="background-color: #dadedc; padding-top: 10px; padding-bottom: 10px;">
+            <div class="col-12">
+                <div class="chart-container">
+                    <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cost-tab" data-bs-toggle="tab" data-bs-target="#cost" type="button" role="tab">Cost Analysis</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab">Performance Metrics</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">Audit Insights</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="analysisTabsContent">
+                        <div class="tab-pane fade show active" id="cost" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Monthly Cost Flow Analysis</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="costFlowChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Cost Optimization Opportunities</div>
+                                        <div class="chart-wrapper">
+                                            <ul class="list-group">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    IT Process Automation
+                                                    <span class="badge bg-success rounded-pill">Save ₹45K/month</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Cross-Dept Coordination
+                                                    <span class="badge bg-success rounded-pill">Save ₹32K/month</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Vendor Compliance Management
+                                                    <span class="badge bg-success rounded-pill">Save ₹28K/month</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Training Program Optimization
+                                                    <span class="badge bg-success rounded-pill">Save ₹15K/month</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="performance" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Department Performance Comparison</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="deptComparisonChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Key Performance Metrics</div>
+                                        <div class="chart-wrapper">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Department</th>
+                                                        <th>On-Time %</th>
+                                                        <th>Cost/Process</th>
+                                                        <th>Audit Score</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span class="department-tag finance">Finance</span></td>
+                                                        <td>96%</td>
+                                                        <td>₹12,500</td>
+                                                        <td>92</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag it">IT</span></td>
+                                                        <td>82%</td>
+                                                        <td>₹18,300</td>
+                                                        <td>78</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag production">Production</span></td>
+                                                        <td>91%</td>
+                                                        <td>₹15,700</td>
+                                                        <td>88</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag hr">HR</span></td>
+                                                        <td>95%</td>
+                                                        <td>₹9,800</td>
+                                                        <td>94</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="audit" role="tabpanel">
+                            <div class="row h-100">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Audit Findings Trend</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="auditTrendChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Top Audit Risk Areas</div>
+                                        <div class="chart-wrapper">
+                                            <div class="mb-3">
+                                                <span class="badge bg-danger me-1 p-2 mb-2 d-block">IT Security</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Data Privacy</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Financial Controls</span>
+                                                <span class="badge bg-info me-1 p-2 mb-2 d-block">Labor Compliance</span>
+                                            </div>
+                                            <div class="alert alert-warning">
+                                                <strong>Attention Needed:</strong> IT department has 2 high-severity findings pending closure.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize all charts
+        let performanceChart, costChart, closureTrendChart, delayCauseChart;
+        let auditFindingsChart, costFlowChart, deptComparisonChart, auditTrendChart;
+
+        function initializeCharts() {
+            // Departmental Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'Production', 'HR', 'Legal', 'Procurement'],
+                    datasets: [
+                        {
+                            label: 'Tasks Assigned',
+                            data: [40, 25, 35, 20, 15, 7],
+                            backgroundColor: 'rgba(108, 117, 125, 0.7)'
+                        },
+                        {
+                            label: 'Tasks Completed',
+                            data: [38, 18, 32, 19, 14, 6],
+                            backgroundColor: 'rgba(39, 174, 96, 0.7)'
+                        },
+                        {
+                            label: 'Tasks Delayed',
+                            data: [2, 7, 3, 1, 1, 1],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tasks'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Cost of Compliance Chart
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(costCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Finance', 'Production', 'HR', 'Legal', 'IT', 'Procurement'],
+                    datasets: [{
+                        data: [28, 25, 17, 18, 12, 0],
+                        backgroundColor: [
+                            'rgba(39, 174, 96, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(102, 51, 153, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Closure Trend Chart
+            const closureTrendCtx = document.getElementById('closureTrendChart').getContext('2d');
+            closureTrendChart = new Chart(closureTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Tasks Closed',
+                            data: [85, 92, 78, 95, 88, 92],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Avg Delay (Days)',
+                            data: [4.5, 3.8, 5.2, 3.2, 3.5, 3.2],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: false,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Tasks Closed (%)'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Avg Delay (Days)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Delay Cause Chart
+            const delayCauseCtx = document.getElementById('delayCauseChart').getContext('2d');
+            delayCauseChart = new Chart(delayCauseCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Resource Shortage', 'Coordination Delay', 'Late Approval', 'Technical Issue', 'Other'],
+                    datasets: [{
+                        label: 'Number of Delays',
+                        data: [15, 22, 18, 12, 8],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(108, 117, 125, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Delays'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Audit Findings Chart
+            const auditFindingsCtx = document.getElementById('auditFindingsChart').getContext('2d');
+            auditFindingsChart = new Chart(auditFindingsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'Production', 'HR', 'Legal'],
+                    datasets: [
+                        {
+                            label: 'High Severity',
+                            data: [1, 2, 0, 0, 1],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)'
+                        },
+                        {
+                            label: 'Medium Severity',
+                            data: [2, 1, 1, 0, 0],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)'
+                        },
+                        {
+                            label: 'Low Severity',
+                            data: [1, 0, 0, 1, 0],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Findings'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Cost Flow Chart
+            const costFlowCtx = document.getElementById('costFlowChart').getContext('2d');
+            costFlowChart = new Chart(costFlowCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Initial Budget', 'Regulatory Updates', 'Training', 'Automation Savings', 'Penalty Costs', 'Final Spend'],
+                    datasets: [{
+                        label: 'Amount (₹ Lakhs)',
+                        data: [15, 3, 2, -2, 1, 19],
+                        backgroundColor: [
+                            'rgba(108, 117, 125, 0.7)', // Initial Budget - Gray
+                            'rgba(231, 76, 60, 0.7)',   // Regulatory Updates - Red
+                            'rgba(243, 156, 18, 0.7)',  // Training - Orange
+                            'rgba(39, 174, 96, 0.7)',   // Automation Savings - Green
+                            'rgba(231, 76, 60, 0.7)',   // Penalty Costs - Red
+                            'rgba(52, 152, 219, 0.7)'   // Final Spend - Blue
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹ Lakhs)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Department Comparison Chart
+            const deptComparisonCtx = document.getElementById('deptComparisonChart').getContext('2d');
+            deptComparisonChart = new Chart(deptComparisonCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['On-Time %', 'Cost Efficiency', 'Audit Score', 'Automation %', 'Staff Training'],
+                    datasets: [
+                        {
+                            label: 'Finance',
+                            data: [96, 88, 92, 80, 95],
+                            backgroundColor: 'rgba(39, 174, 96, 0.2)',
+                            borderColor: 'rgb(39, 174, 96)',
+                            pointBackgroundColor: 'rgb(39, 174, 96)'
+                        },
+                        {
+                            label: 'IT',
+                            data: [82, 72, 78, 60, 85],
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgb(52, 152, 219)',
+                            pointBackgroundColor: 'rgb(52, 152, 219)'
+                        },
+                        {
+                            label: 'Production',
+                            data: [91, 84, 88, 70, 90],
+                            backgroundColor: 'rgba(243, 156, 18, 0.2)',
+                            borderColor: 'rgb(243, 156, 18)',
+                            pointBackgroundColor: 'rgb(243, 156, 18)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 50,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Audit Trend Chart
+            const auditTrendCtx = document.getElementById('auditTrendChart').getContext('2d');
+            auditTrendChart = new Chart(auditTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025', 'Q2 2025'],
+                    datasets: [
+                        {
+                            label: 'Open Findings',
+                            data: [12, 10, 8, 6, 5, 4],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Closed Findings',
+                            data: [8, 10, 12, 14, 15, 16],
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Findings'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            
+            // Add event listeners for time filter buttons
+            const timeFilterButtons = document.querySelectorAll('#timeFilter .btn');
+            timeFilterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    timeFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // In a real application, you would update the charts based on the selected time period
+                    const period = this.getAttribute('data-period');
+                    console.log(`Time period changed to: ${period}`);
+                });
+            });
+            
+            // Add event listeners for filter dropdowns
+            const filterSelects = document.querySelectorAll('.form-select');
+            filterSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    // In a real application, you would update the charts based on the selected filters
+                    console.log(`Filter changed: ${this.id} = ${this.value}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

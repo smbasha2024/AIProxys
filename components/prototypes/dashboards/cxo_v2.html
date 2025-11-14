@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CXO Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        :root {
+            --primary-color: #123c67;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --filter-bg: #e8f4f8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #313132, #313132);
+            color: white;
+            padding: 1.5rem;
+            
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-title {
+            font-size: 1.1rem;
+            color: #01182c;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #e4dcf6; /* bottom border line */
+        }
+        
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .trend-up {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .trend-down {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #b6b6b7; /* bottom border line */
+        }
+        
+        .chart-wrapper {
+            flex: none;
+            position: relative;
+            height: 50vh;
+            width: 40vw;
+            padding-left: 5px;
+        }
+        
+        .filter-section {
+            background: var(--filter-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid #c5e3ec;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+        
+        .heatmap-cell {
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .risk-low {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: #196F3D;
+        }
+        
+        .risk-medium {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #9C6400;
+        }
+        
+        .risk-high {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #922B21;
+        }
+        
+        .department-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .finance { background-color: #E8F6F3; color: #1D8348; }
+        .it { background-color: #EBF5FB; color: #2874A6; }
+        .production { background-color: #FEF9E7; color: #9A7D0A; }
+        .hr { background-color: #F4ECF7; color: #6C3483; }
+        .legal { background-color: #FDEDEC; color: #A93226; }
+        .procurement { background-color: #EAF2F8; color: #2E86C1; }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            border-bottom: 3px solid var(--secondary-color);
+            background-color:#e6e9eb
+        }
+        
+        .tab-content {
+            padding-top: 1.5rem;
+        }
+        
+        .time-filter-btn {
+            border-radius: 20px;
+            margin: 0 2px;
+        }
+        
+        .time-filter-btn.active {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: hwb(58 62% 2%);
+        }
+        
+        .tab-pane {
+            min-height: 300px;
+        }
+        
+        .tab-pane .row {
+            height: 100%;
+           
+        }
+        
+        .tab-pane .chart-container {
+            height: 100%;
+        }
+        
+        .equal-height-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .equal-height-cards > .col-md-6 {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="h3 mb-0">Risk Dashboard (CXO)</h1>
+                    <p class="mb-0 opacity-75">Executive overview of compliance health and financial exposure</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group" id="timeFilter">
+                        <button class="btn btn-sm time-filter-btn btn-outline-light" data-period="monthly">Monthly</button>
+                        <button class="btn btn-sm time-filter-btn btn-outline-light active" data-period="quarterly">Quarterly</button>
+                        <button class="btn btn-sm time-filter-btn btn-outline-light" data-period="yearly">Yearly</button>
+                    </div>
+                    <span class="mx-2 text-light">|</span>
+                    <span class="text-light">Last updated: Today, 10:30 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Filters -->
+        <div class="filter-section">
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="timePeriod">
+                        <option>Last 30 Days</option>
+                        <option selected>Last Quarter</option>
+                        <option>Last 6 Months</option>
+                        <option>Year to Date</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" id="department">
+                        <option selected>All Departments</option>
+                        <option>Finance</option>
+                        <option>IT</option>
+                        <option>Production</option>
+                        <option>HR</option>
+                        <option>Legal</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Regulation Type</label>
+                    <select class="form-select" id="regulationType">
+                        <option selected>All Regulations</option>
+                        <option>Financial Compliance</option>
+                        <option>Data Protection</option>
+                        <option>Labor Laws</option>
+                        <option>Environmental</option>
+                        <option>Safety Standards</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Risk Level</label>
+                    <select class="form-select" id="riskLevel">
+                        <option selected>All Risk Levels</option>
+                        <option>High Risk</option>
+                        <option>Medium Risk</option>
+                        <option>Low Risk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4" style="background-color: #efecec; padding-bottom: 10px;">
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Compliance Cost % of Operating Cost</div>
+                    <div class="kpi-value">4.2%</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        0.3% QoQ
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Automation ROI</div>
+                    <div class="kpi-value">62%</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        8% QoQ
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Penalties Trend</div>
+                    <div class="kpi-value">$29,500</div>
+                    <div class="trend-indicator trend-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                        </svg>
+                        15% QoQ
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-title">Closure Rate</div>
+                    <div class="kpi-value">91%</div>
+                    <div class="trend-indicator trend-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+                        </svg>
+                        4% QoQ
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row g-2" style="background-color: #e8e4e4;">
+            <!-- Financial Exposure Trend -->
+            <div class="col-md-6" style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container" style="background-color: #dadedc;">
+                    <div class="chart-title">Financial Exposure Trend</div>
+                    <div class="chart-wrapper">
+                        <canvas id="exposureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Compliance Cost by Department -->
+            <div class="col-md-6"  style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Compliance Cost by Department</div>
+                    <div class="chart-wrapper">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2"  style="background-color: #e8e4e4;">
+            <!-- Regulatory Change Impact -->
+            <div class="col-md-6"  style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container">
+                    <div class="chart-title">Regulatory Change Impact</div>
+                    <div class="chart-wrapper">
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Policies Impacted</th>
+                                        <th>SOPs Impacted</th>
+                                        <th>High Risk Changes</th>
+                                        <th>Overall Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="department-tag finance">Finance</span></td>
+                                        <td>3</td>
+                                        <td>5</td>
+                                        <td>1</td>
+                                        <td><span class="heatmap-cell risk-medium">Medium</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="department-tag it">IT</span></td>
+                                        <td>2</td>
+                                        <td>3</td>
+                                        <td>0</td>
+                                        <td><span class="heatmap-cell risk-low">Low</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="department-tag production">Production</span></td>
+                                        <td>4</td>
+                                        <td>6</td>
+                                        <td>2</td>
+                                        <td><span class="heatmap-cell risk-high">High</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="department-tag hr">HR</span></td>
+                                        <td>2</td>
+                                        <td>4</td>
+                                        <td>1</td>
+                                        <td><span class="heatmap-cell risk-medium">Medium</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="department-tag legal">Legal</span></td>
+                                        <td>3</td>
+                                        <td>5</td>
+                                        <td>1</td>
+                                        <td><span class="heatmap-cell risk-medium">Medium</span></td>
+                                    </tr>
+                                    <!--
+                                    <tr>
+                                        <td><span class="department-tag procurement">Procurement</span></td>
+                                        <td>2</td>
+                                        <td>3</td>
+                                        <td>0</td>
+                                        <td><span class="heatmap-cell risk-low">Low</span></td>
+                                    </tr>
+                                    -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <!-- Compliance Efficiency & Exceptions -->
+            <div class="col-md-6"  style="padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px;">
+                <div class="chart-container" style="background-color: #dadedc;">
+                    <div class="chart-title">Compliance Efficiency & Exceptions</div>
+                    <div class="chart-wrapper">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Analysis Section -->
+        <div class="row mt-4" style="background-color: #dadedc; padding-top: 10px; padding-bottom: 10px;">
+            <div class="col-12">
+                <div class="chart-container">
+                    <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="cost-tab" data-bs-toggle="tab" data-bs-target="#cost" type="button" role="tab">Cost Analysis</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab">Risk Exposure</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="efficiency-tab" data-bs-toggle="tab" data-bs-target="#efficiency" type="button" role="tab">Efficiency Metrics</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="analysisTabsContent">
+                        <div class="tab-pane fade show active" id="cost" role="tabpanel">
+                            <div class="row h-100" style="background-color: #e8e4e4; padding-top: 10px;">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Cost Breakdown</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="detailedCostChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Cost Optimization Opportunities</div>
+                                        <div class="chart-wrapper">
+                                            <ul class="list-group">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    IT Compliance Automation
+                                                    <span class="badge bg-success rounded-pill">Save $45K/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Vendor Compliance Management
+                                                    <span class="badge bg-success rounded-pill">Save $32K/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Legal Contract Standardization
+                                                    <span class="badge bg-success rounded-pill">Save $28K/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Training Program Optimization
+                                                    <span class="badge bg-success rounded-pill">Save $15K/year</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    Audit Process Streamlining
+                                                    <span class="badge bg-success rounded-pill">Save $22K/year</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="risk" role="tabpanel">
+                            <div class="row h-100" style="background-color: #e8e4e4; padding-top: 10px;">
+                                <div class="col-md-8 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Risk Analysis</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="riskChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Top Risk Areas</div>
+                                        <div >
+                                            <div class="mb-3">
+                                                <span class="badge bg-danger me-1 p-2 mb-2 d-block">Production Safety</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Data Privacy</span>
+                                                <span class="badge bg-warning me-1 p-2 mb-2 d-block">Labor Compliance</span>
+                                                <span class="badge bg-info me-1 p-2 mb-2 d-block">Environmental Regulations</span>
+                                            </div>
+                                            <div class="alert alert-warning">
+                                                <strong>Attention Needed:</strong> Production department has 2 high-risk regulatory changes pending implementation.
+                                            </div>
+                                            <div class="alert alert-info">
+                                                <strong>Monitor:</strong> New data protection regulations coming into effect next quarter.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="efficiency" role="tabpanel">
+                            <div class="row h-100" style="background-color: #e8e4e4; padding-top: 10px;">
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Automation Progress</div>
+                                        <div class="chart-wrapper">
+                                            <canvas id="automationChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 h-100">
+                                    <div class="chart-container h-100">
+                                        <div class="chart-title">Efficiency Metrics by Department</div>
+                                        <div class="chart-wrapper">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Department</th>
+                                                        <th>Automation %</th>
+                                                        <th>Closure Rate</th>
+                                                        <th>ROI</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span class="department-tag finance">Finance</span></td>
+                                                        <td>80%</td>
+                                                        <td>92%</td>
+                                                        <td>75%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag it">IT</span></td>
+                                                        <td>60%</td>
+                                                        <td>88%</td>
+                                                        <td>50%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag production">Production</span></td>
+                                                        <td>70%</td>
+                                                        <td>95%</td>
+                                                        <td>60%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag hr">HR</span></td>
+                                                        <td>55%</td>
+                                                        <td>90%</td>
+                                                        <td>45%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="department-tag legal">Legal</span></td>
+                                                        <td>75%</td>
+                                                        <td>89%</td>
+                                                        <td>65%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize all charts
+        let exposureChart, costChart, efficiencyChart, detailedCostChart, riskChart, automationChart;
+
+        function initializeCharts() {
+            // Financial Exposure Trend Chart
+            const exposureCtx = document.getElementById('exposureChart').getContext('2d');
+            exposureChart = new Chart(exposureCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025', 'May 2025', 'Jun 2025'],
+                    datasets: [
+                        {
+                            label: 'Fines (USD)',
+                            data: [10000, 8500, 6000, 5000, 4500, 4000],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Non-Compliance Cost (USD)',
+                            data: [50000, 45000, 30000, 25000, 22000, 20000],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'USD'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Compliance Cost by Department Chart
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'Production', 'HR', 'Legal', 'Procurement'],
+                    datasets: [
+                        {
+                            label: 'Compliance Cost (USD)',
+                            data: [120000, 90000, 150000, 70000, 110000, 80000],
+                            backgroundColor: [
+                                'rgba(52, 152, 219, 0.7)',
+                                'rgba(155, 89, 182, 0.7)',
+                                'rgba(52, 152, 219, 0.7)',
+                                'rgba(155, 89, 182, 0.7)',
+                                'rgba(52, 152, 219, 0.7)',
+                                'rgba(155, 89, 182, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(52, 152, 219)',
+                                'rgb(155, 89, 182)',
+                                'rgb(52, 152, 219)',
+                                'rgb(155, 89, 182)',
+                                'rgb(52, 152, 219)',
+                                'rgb(155, 89, 182)'
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'USD'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Compliance Efficiency & Exceptions Chart
+            const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+            efficiencyChart = new Chart(efficiencyCtx, {
+                type: 'bubble',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Finance',
+                            data: [{x: 80, y: 92, r: 10}],
+                            backgroundColor: 'rgba(39, 174, 96, 0.7)',
+                            borderColor: 'rgb(39, 174, 96)'
+                        },
+                        {
+                            label: 'IT',
+                            data: [{x: 60, y: 88, r: 15}],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgb(52, 152, 219)'
+                        },
+                        {
+                            label: 'Production',
+                            data: [{x: 70, y: 95, r: 8}],
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)',
+                            borderColor: 'rgb(243, 156, 18)'
+                        },
+                        {
+                            label: 'HR',
+                            data: [{x: 65, y: 90, r: 12}],
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: 'rgb(155, 89, 182)'
+                        },
+                        {
+                            label: 'Legal',
+                            data: [{x: 75, y: 89, r: 9}],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: 'rgb(231, 76, 60)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.x}% Automation, ${context.raw.y}% Closure Rate`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Automation %'
+                            },
+                            min: 50,
+                            max: 90
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Closure Rate %'
+                            },
+                            min: 80,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Detailed Cost Analysis Chart
+            const detailedCostCtx = document.getElementById('detailedCostChart').getContext('2d');
+            detailedCostChart = new Chart(detailedCostCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Personnel', 'Technology', 'Consulting', 'Training', 'Penalties'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+
+            // Risk Analysis Chart
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            riskChart = new Chart(riskCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Financial Risk', 'Operational Risk', 'Compliance Risk', 'Reputational Risk', 'Strategic Risk'],
+                    datasets: [
+                        {
+                            label: 'Current Quarter',
+                            data: [65, 75, 80, 60, 70],
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgb(52, 152, 219)',
+                            pointBackgroundColor: 'rgb(52, 152, 219)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(52, 152, 219)'
+                        },
+                        {
+                            label: 'Previous Quarter',
+                            data: [75, 85, 90, 70, 80],
+                            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                            borderColor: 'rgb(231, 76, 60)',
+                            pointBackgroundColor: 'rgb(231, 76, 60)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(231, 76, 60)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+
+            // Automation Progress Chart
+            const automationCtx = document.getElementById('automationChart').getContext('2d');
+            automationChart = new Chart(automationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'IT', 'Production', 'HR', 'Legal'],
+                    datasets: [
+                        {
+                            label: 'Current Automation %',
+                            data: [80, 60, 70, 55, 75],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                        },
+                        {
+                            label: 'Target %',
+                            data: [90, 85, 85, 80, 90],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Automation %'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            
+            // Add event listeners for time filter buttons
+            const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+            timeFilterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    timeFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // In a real application, you would update the charts based on the selected time period
+                    // For this demo, we'll just show an alert
+                    const period = this.getAttribute('data-period');
+                    console.log(`Time period changed to: ${period}`);
+                });
+            });
+            
+            // Add event listeners for filter dropdowns
+            const filterSelects = document.querySelectorAll('.form-select');
+            filterSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    // In a real application, you would update the charts based on the selected filters
+                    console.log(`Filter changed: ${this.id} = ${this.value}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
