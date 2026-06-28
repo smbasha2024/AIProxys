@@ -1,5 +1,5 @@
 apiUrl = window.AppConfig.apiBaseUrl;
-apiEmailUrl = apiUrl + "emails/";
+apiEmailUrl = apiUrl + "emails/contactEmail/";
 apiEmail = window.AppConfig.apiBaseEmail;
 apiKeyEmail = window.AppConfig.apiKeyEmail;
 
