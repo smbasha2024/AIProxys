@@ -234,7 +234,7 @@ async function sendEmailGetStart(){
 
     try {
         const response = await fetch(url, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json', // Specify JSON data
